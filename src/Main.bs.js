@@ -3,11 +3,12 @@
 
 var List = require("bs-platform/lib/js/list.js");
 var Curry = require("bs-platform/lib/js/curry.js");
+var Baconjs = require("baconjs");
 var Caml_string = require("bs-platform/lib/js/caml_string.js");
+var Dom$Crosswords = require("./FFI/Dom.bs.js");
 var Board$Crosswords = require("./Board.bs.js");
-var Canvas$Crosswords = require("./FFI/Canvas.bs.js");
 
-var canvas = Curry._1(Canvas$Crosswords.getById, "c");
+var canvas = Curry._1(Dom$Crosswords.getById, "c");
 
 var context = canvas.getContext("2d");
 
@@ -46,6 +47,13 @@ var board = Board$Crosswords.setModifier(2, 2, /* PrimaryHighlighted */0, List.f
 
 Board$Crosswords.draw(board, context);
 
+var obs = Baconjs.fromEvent(canvas, "click");
+
+obs.onValue((function () {
+        console.log("got click event");
+        return /* () */0;
+      }));
+
 var Ctx = 0;
 
 exports.canvas = canvas;
@@ -53,4 +61,5 @@ exports.context = context;
 exports.Ctx = Ctx;
 exports.explodeString = explodeString;
 exports.board = board;
+exports.obs = obs;
 /* canvas Not a pure module */

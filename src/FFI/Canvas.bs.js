@@ -2,12 +2,6 @@
 'use strict';
 
 
-var getById = (
-    function(arg) {
-      return document.getElementById(arg);
-    }
-  );
-
 function circle(ctx, x, y, r) {
   ctx.ellipse(x, y, r, r, 0.0, 0.0, 2.0 * (Math.PI));
   return /* () */0;
@@ -38,6 +32,5 @@ var Ctx = /* module */[
   /* line */line
 ];
 
-exports.getById = getById;
 exports.Ctx = Ctx;
-/* getById Not a pure module */
+/* No side effect */

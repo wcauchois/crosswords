@@ -1,4 +1,4 @@
-let canvas = Canvas.getById("c");
+let canvas = Dom.getById("c");
 
 let context = Canvas.getContext(canvas);
 
@@ -31,6 +31,11 @@ let board =
   |> Board.setModifier(2, 2, Board.PrimaryHighlighted);
 
 Board.draw(board, context);
+
+let obs = Bacon.fromEvent(canvas, "click");
+Bacon.Observable.onValue(obs, (_) => {
+  Js.log("got click event");
+});
 /*Ctx.setFillStyle(context, "#f00");
 
   Ctx.setFont(context, "48px sans-serif");

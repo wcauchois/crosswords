@@ -2,15 +2,7 @@ type canvasRenderingContext2D;
 
 type ctx = canvasRenderingContext2D;
 
-type canvasElement;
-
-let getById: string => canvasElement = [%bs.raw
-  {|
-    function(arg) {
-      return document.getElementById(arg);
-    }
-  |}
-];
+type canvasElement = Dom.domElement;
 
 [@bs.send]
 external getContext :
