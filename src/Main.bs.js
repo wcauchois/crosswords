@@ -4,6 +4,7 @@
 var List = require("bs-platform/lib/js/list.js");
 var Curry = require("bs-platform/lib/js/curry.js");
 var Baconjs = require("baconjs");
+var Caml_array = require("bs-platform/lib/js/caml_array.js");
 var Caml_string = require("bs-platform/lib/js/caml_string.js");
 var Dom$Crosswords = require("./FFI/Dom.bs.js");
 var Board$Crosswords = require("./Board.bs.js");
@@ -47,19 +48,42 @@ var board = Board$Crosswords.setModifier(2, 2, /* PrimaryHighlighted */0, List.f
 
 Board$Crosswords.draw(board, context);
 
-var obs = Baconjs.fromEvent(canvas, "click");
+var obs = Baconjs.fromEvent(Caml_array.caml_array_get(Curry._1(Dom$Crosswords.getByTagName, "body"), 0), "keydown");
 
-obs.onValue((function () {
-        console.log("got click event");
+var keyObs = obs.flatMap((function ($$event) {
+        var match = $$event.key;
+        switch (match) {
+          case "ArrowDown" : 
+              return Baconjs.once(/* Down */3);
+          case "ArrowLeft" : 
+              return Baconjs.once(/* Left */0);
+          case "ArrowRight" : 
+              return Baconjs.once(/* Right */1);
+          case "ArrowUp" : 
+              return Baconjs.once(/* Up */2);
+          default:
+            return Baconjs.never();
+        }
+      }));
+
+keyObs.onValue((function (k) {
+        console.log(k);
         return /* () */0;
       }));
 
 var Ctx = 0;
+
+var Observable = 0;
+
+var KeyboardEvent = 0;
 
 exports.canvas = canvas;
 exports.context = context;
 exports.Ctx = Ctx;
 exports.explodeString = explodeString;
 exports.board = board;
+exports.Observable = Observable;
+exports.KeyboardEvent = KeyboardEvent;
 exports.obs = obs;
+exports.keyObs = keyObs;
 /* canvas Not a pure module */

@@ -8,5 +8,12 @@ var getById = (
     }
   );
 
+var getByTagName = (
+    function(arg) {
+      return document.getElementsByTagName(arg);
+    }
+  );
+
 exports.getById = getById;
+exports.getByTagName = getByTagName;
 /* getById Not a pure module */

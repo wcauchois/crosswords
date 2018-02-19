@@ -32,10 +32,38 @@ let board =
 
 Board.draw(board, context);
 
-let obs = Bacon.fromEvent(canvas, "click");
-Bacon.Observable.onValue(obs, (_) => {
-  Js.log("got click event");
+module Observable = Bacon.Observable;
+module KeyboardEvent = Bacon.KeyboardEvent;
+
+let obs: Bacon.observable(Bacon.keyboardEvent) = Bacon.fromEvent(Dom.getByTagName("body")[0], "keydown");
+type keyboardInput =
+  | Left
+  | Right
+  | Up
+  | Down;
+let keyObs = Observable.flatMap(obs, (event) => {
+/*  switch (event.key) {
+    | => Bacon.never()
+  };
+*/
+/* TODO: make flatMap that uses an option? */
+  switch (KeyboardEvent.key(event)) {
+    | "ArrowUp" => Bacon.once(Up)
+    | "ArrowDown" => Bacon.once(Down)
+    | "ArrowLeft" => Bacon.once(Left)
+    | "ArrowRight" => Bacon.once(Right)
+    | _ => Bacon.never()
+  }
 });
+Observable.onValue(keyObs, k => {
+  Js.log(k);
+})
+/*Bacon.Observable.onValue(obs, (x) => {
+  Js.log(x);
+  Bacon.never();
+  ();
+});
+*/
 /*Ctx.setFillStyle(context, "#f00");
 
   Ctx.setFont(context, "48px sans-serif");

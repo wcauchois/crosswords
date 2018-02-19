@@ -2,7 +2,10 @@
 'use strict';
 
 
+var KeyboardEvent = /* module */[];
+
 var Observable = /* module */[];
 
+exports.KeyboardEvent = KeyboardEvent;
 exports.Observable = Observable;
 /* No side effect */

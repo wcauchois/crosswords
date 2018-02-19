@@ -7,3 +7,11 @@ let getById: string => domElement = [%bs.raw
     }
   |}
 ];
+
+let getByTagName: string => array(domElement) = [%bs.raw
+  {|
+    function(arg) {
+      return document.getElementsByTagName(arg);
+    }
+  |}
+];
