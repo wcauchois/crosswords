@@ -1,1 +1,1 @@
-require('./Demo.bs');
+require('./Main.bs');
