@@ -33,36 +33,57 @@ let board =
 Board.draw(board, context);
 
 module Observable = Bacon.Observable;
+
 module KeyboardEvent = Bacon.KeyboardEvent;
 
-let obs: Bacon.observable(Bacon.keyboardEvent) = Bacon.fromEvent(Dom.getByTagName("body")[0], "keydown");
+let obs: Bacon.observable(Bacon.keyboardEvent) =
+  Bacon.fromEvent(Dom.getByTagName("body")[0], "keydown");
+
 type keyboardInput =
   | Left
   | Right
   | Up
   | Down;
-let keyObs = Observable.flatMapOption(obs, (event) => {
-/*  switch (event.key) {
-    | => Bacon.never()
-  };
-*/
-  switch (KeyboardEvent.key(event)) {
+
+let keyObs =
+  Observable.flatMapOption(obs, event =>
+    switch (KeyboardEvent.key(event)) {
     | "ArrowUp" => Some(Up)
     | "ArrowDown" => Some(Down)
     | "ArrowLeft" => Some(Left)
     | "ArrowRight" => Some(Right)
     | _ => None
-  }
-});
-Observable.onValue(keyObs, k => {
-  Js.log(k);
-});
+    }
+  );
+
+let currentSel = (0, 0);
+
+let selObs =
+  Observable.scan(
+    keyObs,
+    (0, 0),
+    ((xSel, ySel), key) => {
+      let (unclampedX, unclampedY) =
+        switch key {
+        | Up => (xSel + 0, ySel - 1)
+        | Down => (xSel + 0, ySel + 1)
+        | Left => (xSel - 1, ySel + 0)
+        | Right => (xSel + 1, ySel + 0)
+        };
+      (unclampedX, unclampedY);
+    }
+  );
+
+Observable.onValue(selObs, ((xSel, ySel)) => Js.log([|xSel, ySel|]));
+/*Observable.onValue(keyObs, k => {
+    Js.log(k);
+  });*/
 /*Bacon.Observable.onValue(obs, (x) => {
-  Js.log(x);
-  Bacon.never();
-  ();
-});
-*/
+    Js.log(x);
+    Bacon.never();
+    ();
+  });
+  */
 /*Ctx.setFillStyle(context, "#f00");
 
   Ctx.setFont(context, "48px sans-serif");

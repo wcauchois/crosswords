@@ -67,8 +67,51 @@ var keyObs = Bacon$Crosswords.Observable[/* flatMapOption */0](obs, (function ($
         }
       }));
 
-keyObs.onValue((function (k) {
-        console.log(k);
+var selObs = keyObs.scan(/* tuple */[
+      0,
+      0
+    ], (function (param, key) {
+        var ySel = param[1];
+        var xSel = param[0];
+        var match;
+        switch (key) {
+          case 0 : 
+              match = /* tuple */[
+                xSel - 1 | 0,
+                ySel + 0 | 0
+              ];
+              break;
+          case 1 : 
+              match = /* tuple */[
+                xSel + 1 | 0,
+                ySel + 0 | 0
+              ];
+              break;
+          case 2 : 
+              match = /* tuple */[
+                xSel + 0 | 0,
+                ySel - 1 | 0
+              ];
+              break;
+          case 3 : 
+              match = /* tuple */[
+                xSel + 0 | 0,
+                ySel + 1 | 0
+              ];
+              break;
+          
+        }
+        return /* tuple */[
+                match[0],
+                match[1]
+              ];
+      }));
+
+selObs.onValue((function (param) {
+        console.log(/* int array */[
+              param[0],
+              param[1]
+            ]);
         return /* () */0;
       }));
 
@@ -77,6 +120,11 @@ var Ctx = 0;
 var Observable = 0;
 
 var KeyboardEvent = 0;
+
+var currentSel = /* tuple */[
+  0,
+  0
+];
 
 exports.canvas = canvas;
 exports.context = context;
@@ -87,4 +135,6 @@ exports.Observable = Observable;
 exports.KeyboardEvent = KeyboardEvent;
 exports.obs = obs;
 exports.keyObs = keyObs;
+exports.currentSel = currentSel;
+exports.selObs = selObs;
 /* canvas Not a pure module */
