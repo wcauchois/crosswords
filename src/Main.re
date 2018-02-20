@@ -4,17 +4,6 @@ let context = Canvas.getContext(canvas);
 
 module Ctx = Canvas.Ctx;
 
-let explodeString = (s: string) : list(char) => {
-  let rec explodeHelper = (s: string, idx: int, acc: list(char)) =>
-    if (idx == (-1)) {
-      acc;
-    } else {
-      let c = s.[idx];
-      explodeHelper(s, idx - 1, [c, ...acc]);
-    };
-  explodeHelper(s, String.length(s) - 1, []);
-};
-
 let board =
   Board.empty(10, 10)
   |> Board.setState(0, 0, Board.Blocked)
@@ -25,7 +14,7 @@ let board =
         (b: Board.t, (i, c): (int, char)) =>
           Board.setState(1 + i, 2, Board.Full(c), b),
         b,
-        List.mapi((i, c) => (i, c), explodeString("hello"))
+        List.mapi((i, c) => (i, c), Util.explodeString("hello"))
       )
   )
   |> Board.setModifier(2, 2, Board.PrimaryHighlighted);

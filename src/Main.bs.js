@@ -5,36 +5,14 @@ var List = require("bs-platform/lib/js/list.js");
 var Curry = require("bs-platform/lib/js/curry.js");
 var Baconjs = require("baconjs");
 var Caml_array = require("bs-platform/lib/js/caml_array.js");
-var Caml_string = require("bs-platform/lib/js/caml_string.js");
 var Dom$Crosswords = require("./FFI/Dom.bs.js");
+var Util$Crosswords = require("./Util.bs.js");
 var Bacon$Crosswords = require("./FFI/Bacon.bs.js");
 var Board$Crosswords = require("./Board.bs.js");
 
 var canvas = Curry._1(Dom$Crosswords.getById, "c");
 
 var context = canvas.getContext("2d");
-
-function explodeString(s) {
-  var s$1 = s;
-  var _idx = s.length - 1 | 0;
-  var _acc = /* [] */0;
-  while(true) {
-    var acc = _acc;
-    var idx = _idx;
-    if (idx === -1) {
-      return acc;
-    } else {
-      var c = Caml_string.get(s$1, idx);
-      _acc = /* :: */[
-        c,
-        acc
-      ];
-      _idx = idx - 1 | 0;
-      continue ;
-      
-    }
-  };
-}
 
 var b = Board$Crosswords.setState(5, 5, /* Blocked */1, Board$Crosswords.setState(0, 0, /* Blocked */1, Board$Crosswords.empty(10, 10)));
 
@@ -45,7 +23,7 @@ var board = Board$Crosswords.setModifier(2, 2, /* PrimaryHighlighted */0, List.f
                         i,
                         c
                       ];
-              }), explodeString("hello"))));
+              }), Util$Crosswords.explodeString("hello"))));
 
 Board$Crosswords.draw(board, context);
 
@@ -129,7 +107,6 @@ var currentSel = /* tuple */[
 exports.canvas = canvas;
 exports.context = context;
 exports.Ctx = Ctx;
-exports.explodeString = explodeString;
 exports.board = board;
 exports.Observable = Observable;
 exports.KeyboardEvent = KeyboardEvent;
