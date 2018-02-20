@@ -41,23 +41,22 @@ type keyboardInput =
   | Right
   | Up
   | Down;
-let keyObs = Observable.flatMap(obs, (event) => {
+let keyObs = Observable.flatMapOption(obs, (event) => {
 /*  switch (event.key) {
     | => Bacon.never()
   };
 */
-/* TODO: make flatMap that uses an option? */
   switch (KeyboardEvent.key(event)) {
-    | "ArrowUp" => Bacon.once(Up)
-    | "ArrowDown" => Bacon.once(Down)
-    | "ArrowLeft" => Bacon.once(Left)
-    | "ArrowRight" => Bacon.once(Right)
-    | _ => Bacon.never()
+    | "ArrowUp" => Some(Up)
+    | "ArrowDown" => Some(Down)
+    | "ArrowLeft" => Some(Left)
+    | "ArrowRight" => Some(Right)
+    | _ => None
   }
 });
 Observable.onValue(keyObs, k => {
   Js.log(k);
-})
+});
 /*Bacon.Observable.onValue(obs, (x) => {
   Js.log(x);
   Bacon.never();

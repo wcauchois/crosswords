@@ -30,4 +30,13 @@ module Observable = {
 
   [@bs.send]
   external scan : (observable('a), 'b, ('b, 'a) => 'b) => observable('b) = "";
+
+  let flatMapOption = (obs: observable('a), fn: 'a => option('b)) : observable('b) => {
+    flatMap(obs, item => {
+      switch (fn(item)) {
+        | Some(ret) => once(ret)
+        | None => never()
+      }
+    })
+  };
 };

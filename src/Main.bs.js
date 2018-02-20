@@ -7,6 +7,7 @@ var Baconjs = require("baconjs");
 var Caml_array = require("bs-platform/lib/js/caml_array.js");
 var Caml_string = require("bs-platform/lib/js/caml_string.js");
 var Dom$Crosswords = require("./FFI/Dom.bs.js");
+var Bacon$Crosswords = require("./FFI/Bacon.bs.js");
 var Board$Crosswords = require("./Board.bs.js");
 
 var canvas = Curry._1(Dom$Crosswords.getById, "c");
@@ -50,19 +51,19 @@ Board$Crosswords.draw(board, context);
 
 var obs = Baconjs.fromEvent(Caml_array.caml_array_get(Curry._1(Dom$Crosswords.getByTagName, "body"), 0), "keydown");
 
-var keyObs = obs.flatMap((function ($$event) {
+var keyObs = Bacon$Crosswords.Observable[/* flatMapOption */0](obs, (function ($$event) {
         var match = $$event.key;
         switch (match) {
           case "ArrowDown" : 
-              return Baconjs.once(/* Down */3);
+              return /* Some */[/* Down */3];
           case "ArrowLeft" : 
-              return Baconjs.once(/* Left */0);
+              return /* Some */[/* Left */0];
           case "ArrowRight" : 
-              return Baconjs.once(/* Right */1);
+              return /* Some */[/* Right */1];
           case "ArrowUp" : 
-              return Baconjs.once(/* Up */2);
+              return /* Some */[/* Up */2];
           default:
-            return Baconjs.never();
+            return /* None */0;
         }
       }));
 
