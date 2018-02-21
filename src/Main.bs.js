@@ -3,8 +3,6 @@
 
 var List = require("bs-platform/lib/js/list.js");
 var Curry = require("bs-platform/lib/js/curry.js");
-var Baconjs = require("baconjs");
-var Caml_array = require("bs-platform/lib/js/caml_array.js");
 var Dom$Crosswords = require("./FFI/Dom.bs.js");
 var Util$Crosswords = require("./Util.bs.js");
 var Bacon$Crosswords = require("./FFI/Bacon.bs.js");
@@ -27,7 +25,7 @@ var board = Board$Crosswords.setModifier(2, 2, /* PrimaryHighlighted */0, List.f
 
 Board$Crosswords.draw(board, context);
 
-var obs = Baconjs.fromEvent(Caml_array.caml_array_get(Curry._1(Dom$Crosswords.getByTagName, "body"), 0), "keydown");
+var obs = Bacon$Crosswords.capturingKeyboardObservable(/* () */0);
 
 var keyObs = Bacon$Crosswords.Observable[/* flatMapOption */0](obs, (function ($$event) {
         var match = $$event.key;
@@ -93,6 +91,15 @@ selObs.onValue((function (param) {
         return /* () */0;
       }));
 
+var boardObs = selObs.map((function (param) {
+        return Board$Crosswords.setModifier(param[0], param[1], /* SecondaryHighlighted */1, board);
+      }));
+
+boardObs.onValue((function (b) {
+        context.clearRect(0.0, 0.0, 480.0, 480.0);
+        return Board$Crosswords.draw(b, context);
+      }));
+
 var Ctx = 0;
 
 var Observable = 0;
@@ -114,4 +121,5 @@ exports.obs = obs;
 exports.keyObs = keyObs;
 exports.currentSel = currentSel;
 exports.selObs = selObs;
+exports.boardObs = boardObs;
 /* canvas Not a pure module */

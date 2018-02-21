@@ -28,7 +28,7 @@ type cellState =
 
 type cellModifier =
   | PrimaryHighlighted
-  | SecondaryHighligted
+  | SecondaryHighlighted
   | Unmodified;
 
 type cell = (cellState, cellModifier);
@@ -96,7 +96,7 @@ let draw = (b: t, context: Canvas.ctx) : unit => {
         switch modifier {
         | Unmodified => None
         | PrimaryHighlighted => Some(primaryFillColor)
-        | SecondaryHighligted => Some(secondaryFillColor)
+        | SecondaryHighlighted => Some(secondaryFillColor)
         };
       switch maybeFillColor {
       | None => ()

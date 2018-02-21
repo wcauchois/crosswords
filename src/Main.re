@@ -23,10 +23,9 @@ Board.draw(board, context);
 
 module Observable = Bacon.Observable;
 
-module KeyboardEvent = Bacon.KeyboardEvent;
+module KeyboardEvent = Dom.KeyboardEvent;
 
-let obs: Bacon.observable(Bacon.keyboardEvent) =
-  Bacon.fromEvent(Dom.getByTagName("body")[0], "keydown");
+let obs: Bacon.observable(Dom.KeyboardEvent.t) = Bacon.capturingKeyboardObservable();
 
 type keyboardInput =
   | Left
@@ -64,6 +63,19 @@ let selObs =
   );
 
 Observable.onValue(selObs, ((xSel, ySel)) => Js.log([|xSel, ySel|]));
+
+let boardObs =
+  Observable.map(selObs, ((xSel, ySel)) =>
+    Board.setModifier(xSel, ySel, Board.SecondaryHighlighted, board)
+  );
+
+Observable.onValue(
+  boardObs,
+  b => {
+    Canvas.Ctx.clearRect(context, 0.0, 0.0, 480.0, 480.0);
+    Board.draw(b, context);
+  }
+);
 /*Observable.onValue(keyObs, k => {
     Js.log(k);
   });*/

@@ -3,8 +3,18 @@
 
 var Curry = require("bs-platform/lib/js/curry.js");
 var Baconjs = require("baconjs");
+var Dom$Crosswords = require("./Dom.bs.js");
 
-var KeyboardEvent = /* module */[];
+function repeat(callback) {
+  return Baconjs.repeat((function (i) {
+                var match = Curry._1(callback, i);
+                if (match) {
+                  return match[0];
+                } else {
+                  return ( undefined );
+                }
+              }));
+}
 
 function flatMapOption(obs, fn) {
   return obs.flatMap((function (item) {
@@ -19,6 +29,26 @@ function flatMapOption(obs, fn) {
 
 var Observable = /* module */[/* flatMapOption */flatMapOption];
 
-exports.KeyboardEvent = KeyboardEvent;
+function capturingKeyboardObservable() {
+  var currentCallback = [/* None */0];
+  Dom$Crosswords.Window[/* addEventListener */0]("keydown", (function ($$event) {
+          $$event.preventDefault();
+          var match = currentCallback[0];
+          if (match) {
+            return Curry._1(match[0], $$event);
+          } else {
+            return /* () */0;
+          }
+        }));
+  return repeat((function () {
+                return /* Some */[Baconjs.fromCallback((function (callback) {
+                                currentCallback[0] = /* Some */[callback];
+                                return /* () */0;
+                              }))];
+              }));
+}
+
+exports.repeat = repeat;
 exports.Observable = Observable;
+exports.capturingKeyboardObservable = capturingKeyboardObservable;
 /* baconjs Not a pure module */
