@@ -71,11 +71,16 @@ let currentClue: (Board.t, t) => option(string) =
   (b, s) => {
     let clueCoordOpt =
       try (
-        Some(List.find(coord => PairsMap.mem(coord, b.clues), filledCoords(b, s)))
+        Some(
+          List.find(coord => PairsMap.mem(coord, b.clues), filledCoords(b, s))
+        )
       ) {
       | Not_found => None
       };
-    Js.Option.map([@bs] clueCoord => PairsMap.find(clueCoord, b.clues), clueCoordOpt)
+    Js.Option.map(
+      [@bs] (clueCoord => PairsMap.find(clueCoord, b.clues)),
+      clueCoordOpt
+    );
   };
 
 let applyModifiers: (Board.t, t) => Board.t =
