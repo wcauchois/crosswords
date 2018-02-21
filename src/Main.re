@@ -7,7 +7,11 @@ module Ctx = Canvas.Ctx;
 let board =
   Board.empty(10, 10)
   |> Board.setState(0, 0, Board.Blocked)
+  |> Board.setState(4, 0, Board.Blocked)
+  |> Board.setState(5, 0, Board.Blocked)
   |> Board.setState(5, 5, Board.Blocked)
+  |> Board.setState(5, 6, Board.Blocked)
+  |> Board.setState(5, 7, Board.Blocked)
   |> (
     (b: Board.t) =>
       List.fold_left(
@@ -16,8 +20,7 @@ let board =
         b,
         List.mapi((i, c) => (i, c), Util.explodeString("hello"))
       )
-  )
-  |> Board.setModifier(2, 2, Board.PrimaryHighlighted);
+  );
 
 Board.draw(board, context);
 
@@ -29,7 +32,8 @@ type keyboardInput =
   | Left
   | Right
   | Up
-  | Down;
+  | Down
+  | SpaceBar;
 
 let keyObs: Bacon.observable(keyboardInput) =
   Bacon.capturingKeyboardObservable(event =>
@@ -38,34 +42,39 @@ let keyObs: Bacon.observable(keyboardInput) =
     | "ArrowDown" => Some(Down)
     | "ArrowLeft" => Some(Left)
     | "ArrowRight" => Some(Right)
+    | " " => Some(SpaceBar)
     | _ => None
     }
   );
 
-let currentSel = (0, 0);
-
-let selObs =
+let stateObs =
   Observable.scan(
     keyObs,
-    (0, 0),
-    ((xSel, ySel), key) => {
-      let (unclampedX, unclampedY) =
+    BoardState.empty(board),
+    (s, key) => {
+      let (oldX, oldY) = s.cursor;
+      let newCursor =
         switch key {
-        | Up => (xSel + 0, ySel - 1)
-        | Down => (xSel + 0, ySel + 1)
-        | Left => (xSel - 1, ySel + 0)
-        | Right => (xSel + 1, ySel + 0)
+        | Up => (oldX + 0, oldY - 1)
+        | Down => (oldX + 0, oldY + 1)
+        | Left => (oldX - 1, oldY + 0)
+        | Right => (oldX + 1, oldY + 0)
+        | _ => (oldX, oldY)
         };
-      (unclampedX, unclampedY);
+      let newOrientation =
+        if (key == SpaceBar) {
+          BoardState.flipOrientation(s.orientation);
+        } else {
+          s.orientation;
+        };
+      {cursor: newCursor, orientation: newOrientation};
     }
   );
 
-Observable.onValue(selObs, ((xSel, ySel)) => Js.log([|xSel, ySel|]));
+let initBoardState = BoardState.empty(board);
 
 let boardObs =
-  Observable.map(selObs, ((xSel, ySel)) =>
-    Board.setModifier(xSel, ySel, Board.SecondaryHighlighted, board)
-  );
+  Observable.map(stateObs, state => BoardState.applyModifiers(board, state));
 
 Observable.onValue(
   boardObs,
@@ -74,17 +83,3 @@ Observable.onValue(
     Board.draw(b, context);
   }
 );
-/*Observable.onValue(keyObs, k => {
-    Js.log(k);
-  });*/
-/*Bacon.Observable.onValue(obs, (x) => {
-    Js.log(x);
-    Bacon.never();
-    ();
-  });
-  */
-/*Ctx.setFillStyle(context, "#f00");
-
-  Ctx.setFont(context, "48px sans-serif");
-
-  Ctx.fillText(context, "hello", 0.0, 48.0);*/

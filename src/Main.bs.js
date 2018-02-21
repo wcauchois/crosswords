@@ -7,27 +7,30 @@ var Dom$Crosswords = require("./FFI/Dom.bs.js");
 var Util$Crosswords = require("./Util.bs.js");
 var Bacon$Crosswords = require("./FFI/Bacon.bs.js");
 var Board$Crosswords = require("./Board.bs.js");
+var BoardState$Crosswords = require("./BoardState.bs.js");
 
 var canvas = Curry._1(Dom$Crosswords.getById, "c");
 
 var context = canvas.getContext("2d");
 
-var b = Board$Crosswords.setState(5, 5, /* Blocked */1, Board$Crosswords.setState(0, 0, /* Blocked */1, Board$Crosswords.empty(10, 10)));
+var b = Board$Crosswords.setState(5, 7, /* Blocked */1, Board$Crosswords.setState(5, 6, /* Blocked */1, Board$Crosswords.setState(5, 5, /* Blocked */1, Board$Crosswords.setState(5, 0, /* Blocked */1, Board$Crosswords.setState(4, 0, /* Blocked */1, Board$Crosswords.setState(0, 0, /* Blocked */1, Board$Crosswords.empty(10, 10)))))));
 
-var board = Board$Crosswords.setModifier(2, 2, /* PrimaryHighlighted */0, List.fold_left((function (b, param) {
-            return Board$Crosswords.setState(1 + param[0] | 0, 2, /* Full */[param[1]], b);
-          }), b, List.mapi((function (i, c) {
-                return /* tuple */[
-                        i,
-                        c
-                      ];
-              }), Util$Crosswords.explodeString("hello"))));
+var board = List.fold_left((function (b, param) {
+        return Board$Crosswords.setState(1 + param[0] | 0, 2, /* Full */[param[1]], b);
+      }), b, List.mapi((function (i, c) {
+            return /* tuple */[
+                    i,
+                    c
+                  ];
+          }), Util$Crosswords.explodeString("hello")));
 
 Board$Crosswords.draw(board, context);
 
 var keyObs = Bacon$Crosswords.capturingKeyboardObservable((function ($$event) {
         var match = $$event.key;
         switch (match) {
+          case " " : 
+              return /* Some */[/* SpaceBar */4];
           case "ArrowDown" : 
               return /* Some */[/* Down */3];
           case "ArrowLeft" : 
@@ -41,56 +44,55 @@ var keyObs = Bacon$Crosswords.capturingKeyboardObservable((function ($$event) {
         }
       }));
 
-var selObs = keyObs.scan(/* tuple */[
-      0,
-      0
-    ], (function (param, key) {
-        var ySel = param[1];
-        var xSel = param[0];
-        var match;
+var stateObs = keyObs.scan(BoardState$Crosswords.empty(board), (function (s, key) {
+        var match = s[/* cursor */0];
+        var oldY = match[1];
+        var oldX = match[0];
+        var newCursor;
         switch (key) {
           case 0 : 
-              match = /* tuple */[
-                xSel - 1 | 0,
-                ySel + 0 | 0
+              newCursor = /* tuple */[
+                oldX - 1 | 0,
+                oldY + 0 | 0
               ];
               break;
           case 1 : 
-              match = /* tuple */[
-                xSel + 1 | 0,
-                ySel + 0 | 0
+              newCursor = /* tuple */[
+                oldX + 1 | 0,
+                oldY + 0 | 0
               ];
               break;
           case 2 : 
-              match = /* tuple */[
-                xSel + 0 | 0,
-                ySel - 1 | 0
+              newCursor = /* tuple */[
+                oldX + 0 | 0,
+                oldY - 1 | 0
               ];
               break;
           case 3 : 
-              match = /* tuple */[
-                xSel + 0 | 0,
-                ySel + 1 | 0
+              newCursor = /* tuple */[
+                oldX + 0 | 0,
+                oldY + 1 | 0
+              ];
+              break;
+          case 4 : 
+              newCursor = /* tuple */[
+                oldX,
+                oldY
               ];
               break;
           
         }
-        return /* tuple */[
-                match[0],
-                match[1]
+        var newOrientation = key === /* SpaceBar */4 ? BoardState$Crosswords.flipOrientation(s[/* orientation */1]) : s[/* orientation */1];
+        return /* record */[
+                /* cursor */newCursor,
+                /* orientation */newOrientation
               ];
       }));
 
-selObs.onValue((function (param) {
-        console.log(/* int array */[
-              param[0],
-              param[1]
-            ]);
-        return /* () */0;
-      }));
+var initBoardState = BoardState$Crosswords.empty(board);
 
-var boardObs = selObs.map((function (param) {
-        return Board$Crosswords.setModifier(param[0], param[1], /* SecondaryHighlighted */1, board);
+var boardObs = stateObs.map((function (state) {
+        return BoardState$Crosswords.applyModifiers(board, state);
       }));
 
 boardObs.onValue((function (b) {
@@ -104,11 +106,6 @@ var Observable = 0;
 
 var KeyboardEvent = 0;
 
-var currentSel = /* tuple */[
-  0,
-  0
-];
-
 exports.canvas = canvas;
 exports.context = context;
 exports.Ctx = Ctx;
@@ -116,7 +113,7 @@ exports.board = board;
 exports.Observable = Observable;
 exports.KeyboardEvent = KeyboardEvent;
 exports.keyObs = keyObs;
-exports.currentSel = currentSel;
-exports.selObs = selObs;
+exports.stateObs = stateObs;
+exports.initBoardState = initBoardState;
 exports.boardObs = boardObs;
 /* canvas Not a pure module */

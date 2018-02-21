@@ -36,6 +36,30 @@ function empty(width, height) {
         ];
 }
 
+function isValidCoord(x, y, b) {
+  if (x >= 0 && y >= 0 && x < b[/* width */0]) {
+    return +(y < b[/* height */1]);
+  } else {
+    return /* false */0;
+  }
+}
+
+function list_of_coords(b) {
+  var acc = /* [] */0;
+  for(var y = 0 ,y_finish = b[/* height */1]; y <= y_finish; ++y){
+    for(var x = 0 ,x_finish = b[/* width */0]; x <= x_finish; ++x){
+      acc = /* :: */[
+        /* tuple */[
+          x,
+          y
+        ],
+        acc
+      ];
+    }
+  }
+  return List.rev(acc);
+}
+
 function get(x, y, b) {
   try {
     return Curry._2(PairsMap[/* find */21], /* tuple */[
@@ -53,6 +77,10 @@ function get(x, y, b) {
       throw exn;
     }
   }
+}
+
+function getState(x, y, b) {
+  return get(x, y, b)[0];
 }
 
 function makeModFn(modFn, x, y, value, b) {
@@ -182,7 +210,10 @@ exports.fontFace = fontFace;
 exports.primaryFillColor = primaryFillColor;
 exports.secondaryFillColor = secondaryFillColor;
 exports.empty = empty;
+exports.isValidCoord = isValidCoord;
+exports.list_of_coords = list_of_coords;
 exports.get = get;
+exports.getState = getState;
 exports.makeModFn = makeModFn;
 exports.setState = setState;
 exports.setModifier = setModifier;

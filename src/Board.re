@@ -45,10 +45,29 @@ let empty = (width: int, height: int) : t => {
   cells: PairsMap.empty
 };
 
+let isValidCoord: (int, int, t) => bool = (x, y, b) => {
+  x >= 0 && y >= 0 && x < b.width && y < b.height
+};
+
+let list_of_coords = (b: t) => {
+  let acc: ref(list((int, int))) = ref([]);
+  for (y in 0 to b.height) {
+    for (x in 0 to b.width) {
+      acc := [(x, y), ...acc^];
+    }
+  };
+  List.rev(acc^)
+};
+
 let get = (x: int, y: int, b: t) : cell =>
   try (PairsMap.find((x, y), b.cells)) {
   | Not_found => (EmptyCell, Unmodified)
   };
+
+let getState = (x: int, y: int, b: t) : cellState => {
+  let (state, _) = get(x, y, b);
+  state
+};
 
 let makeModFn = (modFn: (cell, 'a) => cell) : ((int, int, 'a, t) => t) =>
   (x: int, y: int, value: 'a, b: t) => {
