@@ -13,7 +13,16 @@ var canvas = Curry._1(Dom$Crosswords.getById, "c");
 
 var context = canvas.getContext("2d");
 
-var b = Board$Crosswords.setState(5, 7, /* Blocked */1, Board$Crosswords.setState(5, 6, /* Blocked */1, Board$Crosswords.setState(5, 5, /* Blocked */1, Board$Crosswords.setState(5, 0, /* Blocked */1, Board$Crosswords.setState(4, 0, /* Blocked */1, Board$Crosswords.setState(0, 0, /* Blocked */1, Board$Crosswords.empty(10, 10)))))));
+var clues = /* :: */[
+  /* tuple */[
+    1,
+    0,
+    "Thingy that you should fill in"
+  ],
+  /* [] */0
+];
+
+var b = Board$Crosswords.setState(5, 7, /* Blocked */1, Board$Crosswords.setState(5, 6, /* Blocked */1, Board$Crosswords.setState(5, 5, /* Blocked */1, Board$Crosswords.setState(5, 0, /* Blocked */1, Board$Crosswords.setState(4, 0, /* Blocked */1, Board$Crosswords.setState(0, 0, /* Blocked */1, Board$Crosswords.empty(10, 10, clues)))))));
 
 var board = List.fold_left((function (b, param) {
         return Board$Crosswords.setState(1 + param[0] | 0, 2, /* Full */[param[1]], b);
@@ -109,6 +118,7 @@ var KeyboardEvent = 0;
 exports.canvas = canvas;
 exports.context = context;
 exports.Ctx = Ctx;
+exports.clues = clues;
 exports.board = board;
 exports.Observable = Observable;
 exports.KeyboardEvent = KeyboardEvent;

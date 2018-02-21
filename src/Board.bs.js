@@ -28,12 +28,17 @@ var primaryFillColor = "#ffeb3b";
 
 var secondaryFillColor = "#2196f3";
 
-function empty(width, height) {
+function empty(width, height, clues) {
   return /* record */[
           /* width */width,
           /* height */height,
           /* cells */PairsMap[/* empty */0],
-          /* clues */PairsMap[/* empty */0]
+          /* clues */List.fold_left((function (acc, param) {
+                  return Curry._3(PairsMap[/* add */3], /* tuple */[
+                              param[0],
+                              param[1]
+                            ], param[2], acc);
+                }), PairsMap[/* empty */0], clues)
         ];
 }
 

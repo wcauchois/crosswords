@@ -4,8 +4,12 @@ let context = Canvas.getContext(canvas);
 
 module Ctx = Canvas.Ctx;
 
+let clues = [
+  (1, 0, "Thingy that you should fill in")
+];
+
 let board =
-  Board.empty(10, 10)
+  Board.empty(10, 10, clues)
   |> Board.setState(0, 0, Board.Blocked)
   |> Board.setState(4, 0, Board.Blocked)
   |> Board.setState(5, 0, Board.Blocked)

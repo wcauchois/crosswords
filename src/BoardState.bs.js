@@ -2,10 +2,13 @@
 'use strict';
 
 var List = require("bs-platform/lib/js/list.js");
+var Curry = require("bs-platform/lib/js/curry.js");
 var Caml_obj = require("bs-platform/lib/js/caml_obj.js");
+var Js_option = require("bs-platform/lib/js/js_option.js");
 var Caml_int32 = require("bs-platform/lib/js/caml_int32.js");
 var Util$Crosswords = require("./Util.bs.js");
 var Board$Crosswords = require("./Board.bs.js");
+var Caml_builtin_exceptions = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 
 function flipOrientation(o) {
   if (o !== 0) {
@@ -95,6 +98,25 @@ function filledCoords(b, s) {
         ];
 }
 
+function currentClue(b, s) {
+  var clueCoordOpt;
+  try {
+    clueCoordOpt = /* Some */[List.find((function (coord) {
+              return Curry._2(Board$Crosswords.PairsMap[/* mem */2], coord, b[/* clues */3]);
+            }), filledCoords(b, s))];
+  }
+  catch (exn){
+    if (exn === Caml_builtin_exceptions.not_found) {
+      clueCoordOpt = /* None */0;
+    } else {
+      throw exn;
+    }
+  }
+  return Js_option.map((function (clueCoord) {
+                return Curry._2(Board$Crosswords.PairsMap[/* find */21], clueCoord, b[/* clues */3]);
+              }), clueCoordOpt);
+}
+
 function applyModifiers(b, s) {
   var match = s[/* cursor */0];
   var b$1 = Board$Crosswords.setModifier(match[0], match[1], /* PrimaryHighlighted */0, b);
@@ -105,9 +127,13 @@ function applyModifiers(b, s) {
                     }))(filledCoords(b$1, s)));
 }
 
+var PairsMap = 0;
+
 exports.flipOrientation = flipOrientation;
 exports.empty = empty;
 exports.direction_of_orientation = direction_of_orientation;
 exports.filledCoords = filledCoords;
+exports.PairsMap = PairsMap;
+exports.currentClue = currentClue;
 exports.applyModifiers = applyModifiers;
 /* Board-Crosswords Not a pure module */

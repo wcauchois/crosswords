@@ -37,28 +37,32 @@ type t = {
   width: int,
   height: int,
   cells: PairsMap.t(cell),
-  clues: PairsMap.t(string),
+  clues: PairsMap.t(string)
 };
 
-let empty = (width: int, height: int) : t => {
+let empty = (width: int, height: int, clues: list((int, int, string))) : t => {
   width,
   height,
   cells: PairsMap.empty,
-  clues: PairsMap.empty,
+  clues:
+    List.fold_left(
+      (acc, (x, y, clueString)) => PairsMap.add((x, y), clueString, acc),
+      PairsMap.empty,
+      clues
+    )
 };
 
-let isValidCoord: (int, int, t) => bool = (x, y, b) => {
-  x >= 0 && y >= 0 && x < b.width && y < b.height
-};
+let isValidCoord: (int, int, t) => bool =
+  (x, y, b) => x >= 0 && y >= 0 && x < b.width && y < b.height;
 
 let list_of_coords = (b: t) => {
   let acc: ref(list((int, int))) = ref([]);
   for (y in 0 to b.height) {
     for (x in 0 to b.width) {
       acc := [(x, y), ...acc^];
-    }
+    };
   };
-  List.rev(acc^)
+  List.rev(acc^);
 };
 
 let get = (x: int, y: int, b: t) : cell =>
@@ -68,7 +72,7 @@ let get = (x: int, y: int, b: t) : cell =>
 
 let getState = (x: int, y: int, b: t) : cellState => {
   let (state, _) = get(x, y, b);
-  state
+  state;
 };
 
 let makeModFn = (modFn: (cell, 'a) => cell) : ((int, int, 'a, t) => t) =>

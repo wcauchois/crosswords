@@ -65,6 +65,19 @@ let filledCoords: (Board.t, t) => list((int, int)) =
     [s.cursor, ...nonCursorPositions];
   };
 
+module PairsMap = Board.PairsMap;
+
+let currentClue: (Board.t, t) => option(string) =
+  (b, s) => {
+    let clueCoordOpt =
+      try (
+        Some(List.find(coord => PairsMap.mem(coord, b.clues), filledCoords(b, s)))
+      ) {
+      | Not_found => None
+      };
+    Js.Option.map([@bs] clueCoord => PairsMap.find(clueCoord, b.clues), clueCoordOpt)
+  };
+
 let applyModifiers: (Board.t, t) => Board.t =
   (b, s) => {
     let (cursorX, cursorY) = s.cursor;
