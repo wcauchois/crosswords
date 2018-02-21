@@ -29,13 +29,14 @@ function flatMapOption(obs, fn) {
 
 var Observable = /* module */[/* flatMapOption */flatMapOption];
 
-function capturingKeyboardObservable() {
+function capturingKeyboardObservable(transformer) {
   var currentCallback = [/* None */0];
   Dom$Crosswords.Window[/* addEventListener */0]("keydown", (function ($$event) {
-          $$event.preventDefault();
-          var match = currentCallback[0];
-          if (match) {
-            return Curry._1(match[0], $$event);
+          var match = Curry._1(transformer, $$event);
+          var match$1 = currentCallback[0];
+          if (match && match$1) {
+            $$event.preventDefault();
+            return Curry._1(match$1[0], match[0]);
           } else {
             return /* () */0;
           }

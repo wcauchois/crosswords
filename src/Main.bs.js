@@ -25,9 +25,7 @@ var board = Board$Crosswords.setModifier(2, 2, /* PrimaryHighlighted */0, List.f
 
 Board$Crosswords.draw(board, context);
 
-var obs = Bacon$Crosswords.capturingKeyboardObservable(/* () */0);
-
-var keyObs = Bacon$Crosswords.Observable[/* flatMapOption */0](obs, (function ($$event) {
+var keyObs = Bacon$Crosswords.capturingKeyboardObservable((function ($$event) {
         var match = $$event.key;
         switch (match) {
           case "ArrowDown" : 
@@ -117,7 +115,6 @@ exports.Ctx = Ctx;
 exports.board = board;
 exports.Observable = Observable;
 exports.KeyboardEvent = KeyboardEvent;
-exports.obs = obs;
 exports.keyObs = keyObs;
 exports.currentSel = currentSel;
 exports.selObs = selObs;

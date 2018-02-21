@@ -25,16 +25,14 @@ module Observable = Bacon.Observable;
 
 module KeyboardEvent = Dom.KeyboardEvent;
 
-let obs: Bacon.observable(Dom.KeyboardEvent.t) = Bacon.capturingKeyboardObservable();
-
 type keyboardInput =
   | Left
   | Right
   | Up
   | Down;
 
-let keyObs =
-  Observable.flatMapOption(obs, event =>
+let keyObs: Bacon.observable(keyboardInput) =
+  Bacon.capturingKeyboardObservable(event =>
     switch (KeyboardEvent.key(event)) {
     | "ArrowUp" => Some(Up)
     | "ArrowDown" => Some(Down)

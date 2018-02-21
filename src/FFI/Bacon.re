@@ -47,18 +47,20 @@ module Observable = {
 
 /* This could be implemented with Bacon.fromEvent, i.e.:
         Bacon.fromEvent(Dom.getByTagName("body")[0], "keydown")
-   But this on the other hand also prevents the default action of the event.
+   But this on the other hand can also prevent the default action of the event.
    */
-let capturingKeyboardObservable: unit => observable(Dom.KeyboardEvent.t) =
-  () => {
-    let currentCallback: ref(option(Dom.KeyboardEvent.t => unit)) = ref(None);
-    Dom.Window.addEventListener("keydown", event => {
-      Dom.KeyboardEvent.preventDefault(event);
-      switch currentCallback^ {
-      | Some(callback) => callback(event)
-      | None => ()
-      };
-    });
+let capturingKeyboardObservable:
+  (Dom.KeyboardEvent.t => option('a)) => observable('a) =
+  transformer => {
+    let currentCallback: ref(option('a => unit)) = ref(None);
+    Dom.Window.addEventListener("keydown", event =>
+      switch (transformer(event), currentCallback^) {
+      | (Some(value), Some(callback)) =>
+        Dom.KeyboardEvent.preventDefault(event);
+        callback(value);
+      | _ => ()
+      }
+    );
     repeat(_i =>
       Some(fromCallback(callback => currentCallback := Some(callback)))
     );
