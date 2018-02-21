@@ -28,16 +28,43 @@ var primaryFillColor = "#ffeb3b";
 
 var secondaryFillColor = "#2196f3";
 
+var emptyCluePair = /* record */[
+  /* vertical : None */0,
+  /* horizontal : None */0
+];
+
 function empty(width, height, clues) {
   return /* record */[
           /* width */width,
           /* height */height,
           /* cells */PairsMap[/* empty */0],
-          /* clues */List.fold_left((function (acc, param) {
+          /* clues */List.fold_left((function (acc, c) {
+                  var existingPair;
+                  try {
+                    existingPair = Curry._2(PairsMap[/* find */21], /* tuple */[
+                          c[/* x */0],
+                          c[/* y */1]
+                        ], acc);
+                  }
+                  catch (exn){
+                    if (exn === Caml_builtin_exceptions.not_found) {
+                      existingPair = emptyCluePair;
+                    } else {
+                      throw exn;
+                    }
+                  }
+                  var match = c[/* o */3];
+                  var newPair = match !== 0 ? /* record */[
+                      /* vertical : Some */[c],
+                      /* horizontal */existingPair[/* horizontal */1]
+                    ] : /* record */[
+                      /* vertical */existingPair[/* vertical */0],
+                      /* horizontal : Some */[c]
+                    ];
                   return Curry._3(PairsMap[/* add */3], /* tuple */[
-                              param[0],
-                              param[1]
-                            ], param[2], acc);
+                              c[/* x */0],
+                              c[/* y */1]
+                            ], newPair, acc);
                 }), PairsMap[/* empty */0], clues)
         ];
 }
@@ -216,6 +243,7 @@ exports.fontOffsY = fontOffsY;
 exports.fontFace = fontFace;
 exports.primaryFillColor = primaryFillColor;
 exports.secondaryFillColor = secondaryFillColor;
+exports.emptyCluePair = emptyCluePair;
 exports.empty = empty;
 exports.isValidCoord = isValidCoord;
 exports.list_of_coords = list_of_coords;

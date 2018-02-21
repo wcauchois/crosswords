@@ -33,20 +33,46 @@ type cellModifier =
 
 type cell = (cellState, cellModifier);
 
+type clue = {
+  x: int,
+  y: int,
+  t: string,
+  o: Util.orientation,
+  a: string /* Answer */
+};
+
+type cluePair = {
+  vertical: option(clue),
+  horizontal: option(clue)
+};
+
+let emptyCluePair = {vertical: None, horizontal: None};
+
 type t = {
   width: int,
   height: int,
   cells: PairsMap.t(cell),
-  clues: PairsMap.t(string)
+  clues: PairsMap.t(cluePair)
 };
 
-let empty = (width: int, height: int, clues: list((int, int, string))) : t => {
+let empty = (width: int, height: int, clues: list(clue)) : t => {
   width,
   height,
   cells: PairsMap.empty,
   clues:
     List.fold_left(
-      (acc, (x, y, clueString)) => PairsMap.add((x, y), clueString, acc),
+      (acc, c) => {
+        let existingPair =
+          try (PairsMap.find((c.x, c.y), acc)) {
+          | Not_found => emptyCluePair
+          };
+        let newPair =
+          switch c.o {
+          | Util.Horizontal => {...existingPair, horizontal: Some(c)}
+          | Util.Vertical => {...existingPair, vertical: Some(c)}
+          };
+        PairsMap.add((c.x, c.y), newPair, acc);
+      },
       PairsMap.empty,
       clues
     )

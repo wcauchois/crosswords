@@ -33,25 +33,11 @@ function empty(b) {
         ];
 }
 
-function direction_of_orientation(o) {
-  if (o !== 0) {
-    return /* tuple */[
-            0,
-            1
-          ];
-  } else {
-    return /* tuple */[
-            1,
-            0
-          ];
-  }
-}
-
 function filledCoords(b, s) {
   var match = s[/* cursor */0];
   var cursorY = match[1];
   var cursorX = match[0];
-  var match$1 = direction_of_orientation(s[/* orientation */1]);
+  var match$1 = Util$Crosswords.direction_of_orientation(s[/* orientation */1]);
   var dirY = match$1[1];
   var dirX = match$1[0];
   var nonCursorPositions = List.flatten(List.map((function (modScalar) {
@@ -98,11 +84,35 @@ function filledCoords(b, s) {
         ];
 }
 
+function clueForOrientation(p, o) {
+  if (o !== 0) {
+    return p[/* vertical */0];
+  } else {
+    return p[/* horizontal */1];
+  }
+}
+
 function currentClue(b, s) {
   var clueCoordOpt;
   try {
     clueCoordOpt = /* Some */[List.find((function (coord) {
-              return Curry._2(Board$Crosswords.PairsMap[/* mem */2], coord, b[/* clues */3]);
+              var exit = 0;
+              var pair;
+              try {
+                pair = Curry._2(Board$Crosswords.PairsMap[/* find */21], coord, b[/* clues */3]);
+                exit = 1;
+              }
+              catch (exn){
+                if (exn === Caml_builtin_exceptions.not_found) {
+                  return /* false */0;
+                } else {
+                  throw exn;
+                }
+              }
+              if (exit === 1) {
+                return Js_option.isSome(clueForOrientation(pair, s[/* orientation */1]));
+              }
+              
             }), filledCoords(b, s))];
   }
   catch (exn){
@@ -112,9 +122,9 @@ function currentClue(b, s) {
       throw exn;
     }
   }
-  return Js_option.map((function (clueCoord) {
-                return Curry._2(Board$Crosswords.PairsMap[/* find */21], clueCoord, b[/* clues */3]);
-              }), clueCoordOpt);
+  return Util$Crosswords.flattenOption(Js_option.map((function (clueCoord) {
+                    return clueForOrientation(Curry._2(Board$Crosswords.PairsMap[/* find */21], clueCoord, b[/* clues */3]), s[/* orientation */1]);
+                  }), clueCoordOpt));
 }
 
 function applyModifiers(b, s) {
@@ -131,9 +141,9 @@ var PairsMap = 0;
 
 exports.flipOrientation = flipOrientation;
 exports.empty = empty;
-exports.direction_of_orientation = direction_of_orientation;
 exports.filledCoords = filledCoords;
 exports.PairsMap = PairsMap;
+exports.clueForOrientation = clueForOrientation;
 exports.currentClue = currentClue;
 exports.applyModifiers = applyModifiers;
 /* Board-Crosswords Not a pure module */

@@ -21,3 +21,20 @@ let unfold: ('b => option(('a, 'b)), 'b) => list('a) =
       };
     unfoldRec(seed, []);
   };
+
+let flattenOption: option(option('a)) => option('a) = optOpt => {
+  switch optOpt {
+  | Some(Some(x)) => Some(x)
+  | _ => None
+  }
+};
+
+type orientation =
+  | Horizontal
+  | Vertical;
+
+let direction_of_orientation = (o: orientation) =>
+  switch o {
+  | Horizontal => (1, 0)
+  | Vertical => (0, 1)
+  };

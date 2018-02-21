@@ -1,6 +1,4 @@
-type orientation =
-  | Horizontal
-  | Vertical;
+type orientation = Util.orientation;
 
 type t = {
   cursor: (int, int),
@@ -28,16 +26,10 @@ let empty: Board.t => t =
     {cursor: firstFreeCell, orientation: Horizontal};
   };
 
-let direction_of_orientation = (o: orientation) =>
-  switch o {
-  | Horizontal => (1, 0)
-  | Vertical => (0, 1)
-  };
-
 let filledCoords: (Board.t, t) => list((int, int)) =
   (b, s) => {
     let (cursorX, cursorY) = s.cursor;
-    let (dirX, dirY) = direction_of_orientation(s.orientation);
+    let (dirX, dirY) = Util.direction_of_orientation(s.orientation);
     let nonCursorPositions =
       List.flatten(
         List.map(
@@ -67,19 +59,44 @@ let filledCoords: (Board.t, t) => list((int, int)) =
 
 module PairsMap = Board.PairsMap;
 
-let currentClue: (Board.t, t) => option(string) =
+let clueForOrientation =
+    (p: Board.cluePair, o: orientation)
+    : option(Board.clue) =>
+  switch o {
+  | Horizontal => p.horizontal
+  | Vertical => p.vertical
+  };
+
+let currentClue: (Board.t, t) => option(Board.clue) =
   (b, s) => {
     let clueCoordOpt =
       try (
         Some(
-          List.find(coord => PairsMap.mem(coord, b.clues), filledCoords(b, s))
+          List.find(
+            coord =>
+              switch (PairsMap.find(coord, b.clues)) {
+              | pair =>
+                Js.Option.isSome(clueForOrientation(pair, s.orientation))
+              | exception Not_found => false
+              },
+            filledCoords(b, s)
+          )
         )
       ) {
       | Not_found => None
       };
-    Js.Option.map(
-      [@bs] (clueCoord => PairsMap.find(clueCoord, b.clues)),
-      clueCoordOpt
+    Util.flattenOption(
+      Js.Option.map(
+        [@bs]
+        (
+          clueCoord =>
+            clueForOrientation(
+              PairsMap.find(clueCoord, b.clues),
+              s.orientation
+            )
+        ),
+        clueCoordOpt
+      )
     );
   };
 

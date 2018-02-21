@@ -49,6 +49,35 @@ function unfold(f, seed) {
   };
 }
 
+function flattenOption(optOpt) {
+  if (optOpt) {
+    var match = optOpt[0];
+    if (match) {
+      return /* Some */[match[0]];
+    } else {
+      return /* None */0;
+    }
+  } else {
+    return /* None */0;
+  }
+}
+
+function direction_of_orientation(o) {
+  if (o !== 0) {
+    return /* tuple */[
+            0,
+            1
+          ];
+  } else {
+    return /* tuple */[
+            1,
+            0
+          ];
+  }
+}
+
 exports.explodeString = explodeString;
 exports.unfold = unfold;
+exports.flattenOption = flattenOption;
+exports.direction_of_orientation = direction_of_orientation;
 /* No side effect */

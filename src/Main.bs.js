@@ -4,7 +4,6 @@
 var List = require("bs-platform/lib/js/list.js");
 var Curry = require("bs-platform/lib/js/curry.js");
 var Dom$Crosswords = require("./FFI/Dom.bs.js");
-var Util$Crosswords = require("./Util.bs.js");
 var Bacon$Crosswords = require("./FFI/Bacon.bs.js");
 var Board$Crosswords = require("./Board.bs.js");
 var BoardState$Crosswords = require("./BoardState.bs.js");
@@ -13,25 +12,74 @@ var canvas = Curry._1(Dom$Crosswords.getById, "c");
 
 var context = canvas.getContext("2d");
 
+var clues_000 = /* record */[
+  /* x */3,
+  /* y */0,
+  /* t */"One with pointy-toed shoes",
+  /* o : Horizontal */0,
+  /* a */""
+];
+
 var clues = /* :: */[
-  /* tuple */[
-    1,
-    0,
-    "Thingy that you should fill in"
-  ],
+  clues_000,
   /* [] */0
 ];
 
-var b = Board$Crosswords.setState(5, 7, /* Blocked */1, Board$Crosswords.setState(5, 6, /* Blocked */1, Board$Crosswords.setState(5, 5, /* Blocked */1, Board$Crosswords.setState(5, 0, /* Blocked */1, Board$Crosswords.setState(4, 0, /* Blocked */1, Board$Crosswords.setState(0, 0, /* Blocked */1, Board$Crosswords.empty(10, 10, clues)))))));
+var blocks = /* :: */[
+  /* tuple */[
+    0,
+    0
+  ],
+  /* :: */[
+    /* tuple */[
+      1,
+      0
+    ],
+    /* :: */[
+      /* tuple */[
+        2,
+        0
+      ],
+      /* :: */[
+        /* tuple */[
+          6,
+          0
+        ],
+        /* :: */[
+          /* tuple */[
+            7,
+            0
+          ],
+          /* :: */[
+            /* tuple */[
+              8,
+              0
+            ],
+            /* :: */[
+              /* tuple */[
+                0,
+                1
+              ],
+              /* :: */[
+                /* tuple */[
+                  8,
+                  1
+                ],
+                /* [] */0
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]
+  ]
+];
+
+var b = Board$Crosswords.empty(9, 9, clues);
 
 var board = List.fold_left((function (b, param) {
-        return Board$Crosswords.setState(1 + param[0] | 0, 2, /* Full */[param[1]], b);
-      }), b, List.mapi((function (i, c) {
-            return /* tuple */[
-                    i,
-                    c
-                  ];
-          }), Util$Crosswords.explodeString("hello")));
+        return Board$Crosswords.setState(param[0], param[1], /* Blocked */1, b);
+      }), b, blocks);
 
 Board$Crosswords.draw(board, context);
 
@@ -111,6 +159,10 @@ boardObs.onValue((function (b) {
 
 var Ctx = 0;
 
+var across = /* Horizontal */0;
+
+var down = /* Vertical */1;
+
 var Observable = 0;
 
 var KeyboardEvent = 0;
@@ -118,7 +170,10 @@ var KeyboardEvent = 0;
 exports.canvas = canvas;
 exports.context = context;
 exports.Ctx = Ctx;
+exports.across = across;
+exports.down = down;
 exports.clues = clues;
+exports.blocks = blocks;
 exports.board = board;
 exports.Observable = Observable;
 exports.KeyboardEvent = KeyboardEvent;
