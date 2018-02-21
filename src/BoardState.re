@@ -34,14 +34,14 @@ let direction_of_orientation = (o: orientation) =>
   | Vertical => (0, 1)
   };
 
-let applyModifiers: (Board.t, t) => Board.t =
+let filledCoords: (Board.t, t) => list((int, int)) =
   (b, s) => {
     let (cursorX, cursorY) = s.cursor;
     let (dirX, dirY) = direction_of_orientation(s.orientation);
-    let packedMods =
-      List.map(
-        (modScalar, b: Board.t) => {
-          let positionsToFill: list((int, int)) =
+    let nonCursorPositions =
+      List.flatten(
+        List.map(
+          modScalar =>
             Util.unfold(
               i => {
                 let (x, y) = (
@@ -58,22 +58,24 @@ let applyModifiers: (Board.t, t) => Board.t =
                 };
               },
               1
-            );
-          List.fold_left(
-            (b, (x, y)) =>
-              Board.setModifier(x, y, Board.SecondaryHighlighted, b),
-            b,
-            positionsToFill
-          );
-        },
-        [(-1), 1]
+            ),
+          [(-1), 1]
+        )
       );
-    let (negMod, posMod) =
-      switch packedMods {
-      | [negMod, posMod] => (negMod, posMod)
-      | _ => raise(Failure("Shouldn't happen"))
-      };
+    [s.cursor, ...nonCursorPositions];
+  };
+
+let applyModifiers: (Board.t, t) => Board.t =
+  (b, s) => {
+    let (cursorX, cursorY) = s.cursor;
     Board.setModifier(cursorX, cursorY, Board.PrimaryHighlighted, b)
-    |> negMod
-    |> posMod;
+    |> (
+      (b: Board.t) =>
+        List.fold_left(
+          (b, (x, y)) =>
+            Board.setModifier(x, y, Board.SecondaryHighlighted, b),
+          b,
+          List.filter(c => c != s.cursor, filledCoords(b, s))
+        )
+    );
   };

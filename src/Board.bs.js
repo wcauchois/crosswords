@@ -32,7 +32,8 @@ function empty(width, height) {
   return /* record */[
           /* width */width,
           /* height */height,
-          /* cells */PairsMap[/* empty */0]
+          /* cells */PairsMap[/* empty */0],
+          /* clues */PairsMap[/* empty */0]
         ];
 }
 
@@ -91,7 +92,8 @@ function makeModFn(modFn, x, y, value, b) {
           /* cells */Curry._3(PairsMap[/* add */3], /* tuple */[
                 x,
                 y
-              ], Curry._2(modFn, currentCell, value), b[/* cells */2])
+              ], Curry._2(modFn, currentCell, value), b[/* cells */2]),
+          /* clues */b[/* clues */3]
         ];
 }
 

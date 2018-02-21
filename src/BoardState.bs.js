@@ -2,11 +2,10 @@
 'use strict';
 
 var List = require("bs-platform/lib/js/list.js");
-var Curry = require("bs-platform/lib/js/curry.js");
+var Caml_obj = require("bs-platform/lib/js/caml_obj.js");
 var Caml_int32 = require("bs-platform/lib/js/caml_int32.js");
 var Util$Crosswords = require("./Util.bs.js");
 var Board$Crosswords = require("./Board.bs.js");
-var Caml_builtin_exceptions = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 
 function flipOrientation(o) {
   if (o !== 0) {
@@ -45,86 +44,70 @@ function direction_of_orientation(o) {
   }
 }
 
-function applyModifiers(b, s) {
+function filledCoords(b, s) {
   var match = s[/* cursor */0];
   var cursorY = match[1];
   var cursorX = match[0];
   var match$1 = direction_of_orientation(s[/* orientation */1]);
   var dirY = match$1[1];
   var dirX = match$1[0];
-  var packedMods = List.map((function (modScalar, b) {
-          var positionsToFill = Util$Crosswords.unfold((function (i) {
-                  var x = Caml_int32.imul(Caml_int32.imul(dirX, modScalar), i) + cursorX | 0;
-                  var y = Caml_int32.imul(Caml_int32.imul(dirY, modScalar), i) + cursorY | 0;
-                  if (Board$Crosswords.isValidCoord(x, y, b)) {
-                    var match = Board$Crosswords.get(x, y, b);
-                    var match$1 = match[0];
-                    var exit = 0;
-                    if (typeof match$1 === "number") {
-                      if (match$1 !== 0) {
-                        return /* None */0;
-                      } else {
-                        exit = 1;
-                      }
-                    } else {
-                      exit = 1;
-                    }
-                    if (exit === 1) {
-                      return /* Some */[/* tuple */[
-                                /* tuple */[
-                                  x,
-                                  y
-                                ],
-                                i + 1 | 0
-                              ]];
-                    }
-                    
-                  } else {
-                    return /* None */0;
-                  }
-                }), 1);
-          return List.fold_left((function (b, param) {
-                        return Board$Crosswords.setModifier(param[0], param[1], /* SecondaryHighlighted */1, b);
-                      }), b, positionsToFill);
-        }), /* :: */[
-        -1,
-        /* :: */[
-          1,
-          /* [] */0
-        ]
-      ]);
-  var match$2;
-  if (packedMods) {
-    var match$3 = packedMods[1];
-    if (match$3) {
-      if (match$3[1]) {
-        throw [
-              Caml_builtin_exceptions.failure,
-              "Shouldn't happen"
-            ];
-      } else {
-        match$2 = /* tuple */[
-          packedMods[0],
-          match$3[0]
+  var nonCursorPositions = List.flatten(List.map((function (modScalar) {
+              return Util$Crosswords.unfold((function (i) {
+                            var x = Caml_int32.imul(Caml_int32.imul(dirX, modScalar), i) + cursorX | 0;
+                            var y = Caml_int32.imul(Caml_int32.imul(dirY, modScalar), i) + cursorY | 0;
+                            if (Board$Crosswords.isValidCoord(x, y, b)) {
+                              var match = Board$Crosswords.get(x, y, b);
+                              var match$1 = match[0];
+                              var exit = 0;
+                              if (typeof match$1 === "number") {
+                                if (match$1 !== 0) {
+                                  return /* None */0;
+                                } else {
+                                  exit = 1;
+                                }
+                              } else {
+                                exit = 1;
+                              }
+                              if (exit === 1) {
+                                return /* Some */[/* tuple */[
+                                          /* tuple */[
+                                            x,
+                                            y
+                                          ],
+                                          i + 1 | 0
+                                        ]];
+                              }
+                              
+                            } else {
+                              return /* None */0;
+                            }
+                          }), 1);
+            }), /* :: */[
+            -1,
+            /* :: */[
+              1,
+              /* [] */0
+            ]
+          ]));
+  return /* :: */[
+          s[/* cursor */0],
+          nonCursorPositions
         ];
-      }
-    } else {
-      throw [
-            Caml_builtin_exceptions.failure,
-            "Shouldn't happen"
-          ];
-    }
-  } else {
-    throw [
-          Caml_builtin_exceptions.failure,
-          "Shouldn't happen"
-        ];
-  }
-  return Curry._1(match$2[1], Curry._1(match$2[0], Board$Crosswords.setModifier(cursorX, cursorY, /* PrimaryHighlighted */0, b)));
+}
+
+function applyModifiers(b, s) {
+  var match = s[/* cursor */0];
+  var b$1 = Board$Crosswords.setModifier(match[0], match[1], /* PrimaryHighlighted */0, b);
+  return List.fold_left((function (b, param) {
+                return Board$Crosswords.setModifier(param[0], param[1], /* SecondaryHighlighted */1, b);
+              }), b$1, List.filter((function (c) {
+                      return Caml_obj.caml_notequal(c, s[/* cursor */0]);
+                    }))(filledCoords(b$1, s)));
 }
 
 exports.flipOrientation = flipOrientation;
 exports.empty = empty;
 exports.direction_of_orientation = direction_of_orientation;
+exports.filledCoords = filledCoords;
 exports.applyModifiers = applyModifiers;
 /* Board-Crosswords Not a pure module */

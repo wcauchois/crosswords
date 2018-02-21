@@ -36,13 +36,15 @@ type cell = (cellState, cellModifier);
 type t = {
   width: int,
   height: int,
-  cells: PairsMap.t(cell)
+  cells: PairsMap.t(cell),
+  clues: PairsMap.t(string),
 };
 
 let empty = (width: int, height: int) : t => {
   width,
   height,
-  cells: PairsMap.empty
+  cells: PairsMap.empty,
+  clues: PairsMap.empty,
 };
 
 let isValidCoord: (int, int, t) => bool = (x, y, b) => {
