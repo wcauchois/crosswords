@@ -30,6 +30,10 @@ module Window = {
     };
 };
 
+module Element {
+  [@bs.set] external setText : (domElement, string) => unit = "text";
+};
+
 module KeyboardEvent = {
   type t;
   [@bs.send] external preventDefault : t => unit = "";

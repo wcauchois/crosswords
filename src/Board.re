@@ -9,11 +9,11 @@ module IntPairs = {
 
 module PairsMap = Map.Make(IntPairs);
 
-let boardScale: float = 32.0;
+let boardScale: float = 50.0;
 
 let gutterSize: float = 1.0;
 
-let (fontSizeMod, fontOffsX, fontOffsY) = (1.0, 8.0, (-4.0));
+let (fontSizeMod, fontOffsX, fontOffsY) = (1.0, 11.0, 8.0);
 
 let fontFace: string = "monospace";
 

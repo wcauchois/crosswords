@@ -148,7 +148,7 @@ function setModifier(param, param$1, param$2, param$3) {
 }
 
 function draw(b, context) {
-  var fontSize = 32.0 * 1.0;
+  var fontSize = 50.0 * 1.0;
   var roundedFontSize = Math.floor(fontSize) | 0;
   context.font = "" + (String(roundedFontSize) + ("px " + (String(fontFace) + "")));
   context.lineWidth = 1.0;
@@ -157,7 +157,7 @@ function draw(b, context) {
                 0.0,
                 drawY
               ], /* tuple */[
-                b[/* width */0] * (32.0 + 1.0),
+                b[/* width */0] * (50.0 + 1.0),
                 drawY
               ]);
   };
@@ -167,7 +167,7 @@ function draw(b, context) {
                 0.0
               ], /* tuple */[
                 drawX,
-                b[/* height */1] * (32.0 + 1.0)
+                b[/* height */1] * (50.0 + 1.0)
               ]);
   };
   List.iter((function (f) {
@@ -183,8 +183,8 @@ function draw(b, context) {
     for(var x = 0 ,x_finish = b[/* width */0]; x <= x_finish; ++x){
       var xFloat = x;
       var yFloat = y;
-      var drawX = xFloat * 32.0 + (xFloat - 1.0) * 1.0;
-      var drawY = yFloat * 32.0 + (yFloat - 1.0) * 1.0;
+      var drawX = xFloat * 50.0 + (xFloat - 1.0) * 1.0;
+      var drawY = yFloat * 50.0 + (yFloat - 1.0) * 1.0;
       drawHorizRulerAt(drawY);
       drawVertRulerAt(drawX);
       var match = get(x, y, b);
@@ -204,32 +204,32 @@ function draw(b, context) {
       }
       if (maybeFillColor) {
         context.fillStyle = maybeFillColor[0];
-        context.fillRect(drawX, drawY, 32.0, 32.0);
+        context.fillRect(drawX, drawY, 50.0, 50.0);
       }
       if (typeof state === "number") {
         if (state !== 0) {
           context.fillStyle = "#000";
-          context.fillRect(drawX, drawY, 32.0, 32.0);
+          context.fillRect(drawX, drawY, 50.0, 50.0);
         }
         
       } else {
         context.fillStyle = "#000";
-        context.fillText($$String.make(1, state[0]), drawX + 8.0, drawY + 32.0 + -4.0);
+        context.fillText($$String.make(1, state[0]), drawX + 11.0, drawY + 32.0 + 8.0);
       }
     }
   }
   return /* () */0;
 }
 
-var boardScale = 32.0;
+var boardScale = 50.0;
 
 var gutterSize = 1.0;
 
 var fontSizeMod = 1.0;
 
-var fontOffsX = 8.0;
+var fontOffsX = 11.0;
 
-var fontOffsY = -4.0;
+var fontOffsY = 8.0;
 
 var Ctx = 0;
 

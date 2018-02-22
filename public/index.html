@@ -3,13 +3,15 @@
   <head>
     <title>
     </title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <style type="text/css">
       body {
-        font-family: sans-serif;
+        font-family: 'Roboto', sans-serif;
       }
       #clue {
         background-color: #2196f3;
-        width: 330px;
+        width: 255px;
+        box-sizing: border-box;
         padding: 5px;
         font-size: 16px;
         text-align: center;
@@ -18,7 +20,8 @@
   </head>
   <body>
     <div class="container">
-      <canvas id="c" width="330" height="330">
+      <!-- Cells are 33px width total -->
+      <canvas id="c" width="255" height="255">
       </canvas>
       <div id="clue">
         Whattup

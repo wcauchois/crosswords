@@ -26,10 +26,13 @@ function addEventListener(eventName, callback) {
 
 var Window = /* module */[/* addEventListener */addEventListener];
 
+var Element = /* module */[];
+
 var KeyboardEvent = /* module */[];
 
 exports.getById = getById;
 exports.getByTagName = getByTagName;
 exports.Window = Window;
+exports.Element = Element;
 exports.KeyboardEvent = KeyboardEvent;
 /* getById Not a pure module */

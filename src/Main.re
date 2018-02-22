@@ -9,13 +9,24 @@ let across = Util.Horizontal;
 let down = Util.Vertical;
 
 let clues: list(Board.clue) = [
-  {x: 3, y: 0, t: "One with pointy-toed shoes", o: across, a: ""}
+  /* across */
+  {x: 1, y: 0, t: "What everyone brings to a potluck dinner", o: across, a: "DISH"},
+  {x: 1, y: 1, t: "Swimming lane separator", o: across, a: "ROPE"},
+  {x: 0, y: 2, t: "Two-faced Roman god", o: across, a: "JANUS"},
+  {x: 0, y: 3, t: "Similar (to)", o: across, a: "AKIN"},
+  {x: 0, y: 4, t: "___ Bennett, \"S.N.L.\" cast member who impersonates Putin", o: across, a: "BECK"},
+  /* down */
+  {x: 0, y: 2, t: "Quick punch", o: down, a: "JAB"},
+  {x: 1, y: 0, t: "\"Started From the Bottom\" rapper", o: down, a: "DRAKE"},
+  {x: 2, y: 0, t: "Kind of bond in chemistry", o: down, a: "IONIC"},
+  {x: 3, y: 0, t: "Courageous spirit", o: down, a: "SPUNK"},
+  {x: 4, y: 0, t: "___ Just Not That Into You", o: down, a: "HES"},
 ];
 
-let blocks = [(0, 0), (1, 0), (2, 0), (6, 0), (7, 0), (8, 0), (0, 1), (8, 1)];
+let blocks = [(0, 0), (0, 1), (4, 3), (4, 4)];
 
 let board =
-  Board.empty(9, 9, clues)
+  Board.empty(5, 5, clues)
   |> (
     (b: Board.t) =>
       List.fold_left(

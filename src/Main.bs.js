@@ -13,59 +13,87 @@ var canvas = Curry._1(Dom$Crosswords.getById, "c");
 var context = canvas.getContext("2d");
 
 var clues_000 = /* record */[
-  /* x */3,
+  /* x */1,
   /* y */0,
-  /* t */"One with pointy-toed shoes",
+  /* t */"What everyone brings to a potluck dinner",
   /* o : Horizontal */0,
-  /* a */""
+  /* a */"DISH"
 ];
 
-var clues = /* :: */[
-  clues_000,
-  /* [] */0
-];
-
-var blocks = /* :: */[
-  /* tuple */[
-    0,
-    0
+var clues_001 = /* :: */[
+  /* record */[
+    /* x */1,
+    /* y */1,
+    /* t */"Swimming lane separator",
+    /* o : Horizontal */0,
+    /* a */"ROPE"
   ],
   /* :: */[
-    /* tuple */[
-      1,
-      0
+    /* record */[
+      /* x */0,
+      /* y */2,
+      /* t */"Two-faced Roman god",
+      /* o : Horizontal */0,
+      /* a */"JANUS"
     ],
     /* :: */[
-      /* tuple */[
-        2,
-        0
+      /* record */[
+        /* x */0,
+        /* y */3,
+        /* t */"Similar (to)",
+        /* o : Horizontal */0,
+        /* a */"AKIN"
       ],
       /* :: */[
-        /* tuple */[
-          6,
-          0
+        /* record */[
+          /* x */0,
+          /* y */4,
+          /* t */"___ Bennett, \"S.N.L.\" cast member who impersonates Putin",
+          /* o : Horizontal */0,
+          /* a */"BECK"
         ],
         /* :: */[
-          /* tuple */[
-            7,
-            0
+          /* record */[
+            /* x */0,
+            /* y */2,
+            /* t */"Quick punch",
+            /* o : Vertical */1,
+            /* a */"JAB"
           ],
           /* :: */[
-            /* tuple */[
-              8,
-              0
+            /* record */[
+              /* x */1,
+              /* y */0,
+              /* t */"\"Started From the Bottom\" rapper",
+              /* o : Vertical */1,
+              /* a */"DRAKE"
             ],
             /* :: */[
-              /* tuple */[
-                0,
-                1
+              /* record */[
+                /* x */2,
+                /* y */0,
+                /* t */"Kind of bond in chemistry",
+                /* o : Vertical */1,
+                /* a */"IONIC"
               ],
               /* :: */[
-                /* tuple */[
-                  8,
-                  1
+                /* record */[
+                  /* x */3,
+                  /* y */0,
+                  /* t */"Courageous spirit",
+                  /* o : Vertical */1,
+                  /* a */"SPUNK"
                 ],
-                /* [] */0
+                /* :: */[
+                  /* record */[
+                    /* x */4,
+                    /* y */0,
+                    /* t */"___ Just Not That Into You",
+                    /* o : Vertical */1,
+                    /* a */"HES"
+                  ],
+                  /* [] */0
+                ]
               ]
             ]
           ]
@@ -75,7 +103,38 @@ var blocks = /* :: */[
   ]
 ];
 
-var b = Board$Crosswords.empty(9, 9, clues);
+var clues = /* :: */[
+  clues_000,
+  clues_001
+];
+
+var blocks = /* :: */[
+  /* tuple */[
+    0,
+    0
+  ],
+  /* :: */[
+    /* tuple */[
+      0,
+      1
+    ],
+    /* :: */[
+      /* tuple */[
+        4,
+        3
+      ],
+      /* :: */[
+        /* tuple */[
+          4,
+          4
+        ],
+        /* [] */0
+      ]
+    ]
+  ]
+];
+
+var b = Board$Crosswords.empty(5, 5, clues);
 
 var board = List.fold_left((function (b, param) {
         return Board$Crosswords.setState(param[0], param[1], /* Blocked */1, b);
