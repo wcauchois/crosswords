@@ -161,46 +161,47 @@ var keyObs = Bacon$Crosswords.capturingKeyboardObservable((function ($$event) {
       }));
 
 var stateObs = keyObs.scan(BoardState$Crosswords.empty(board), (function (s, key) {
-        var match = s[/* cursor */0];
-        var oldY = match[1];
-        var oldX = match[0];
-        var newCursor;
+        var moveDirectionOpt;
         switch (key) {
           case 0 : 
-              newCursor = /* tuple */[
-                oldX - 1 | 0,
-                oldY + 0 | 0
-              ];
+              moveDirectionOpt = /* Some */[/* tuple */[
+                  -1,
+                  0
+                ]];
               break;
           case 1 : 
-              newCursor = /* tuple */[
-                oldX + 1 | 0,
-                oldY + 0 | 0
-              ];
+              moveDirectionOpt = /* Some */[/* tuple */[
+                  1,
+                  0
+                ]];
               break;
           case 2 : 
-              newCursor = /* tuple */[
-                oldX + 0 | 0,
-                oldY - 1 | 0
-              ];
+              moveDirectionOpt = /* Some */[/* tuple */[
+                  0,
+                  -1
+                ]];
               break;
           case 3 : 
-              newCursor = /* tuple */[
-                oldX + 0 | 0,
-                oldY + 1 | 0
-              ];
+              moveDirectionOpt = /* Some */[/* tuple */[
+                  0,
+                  1
+                ]];
               break;
           case 4 : 
-              newCursor = /* tuple */[
-                oldX,
-                oldY
-              ];
+              moveDirectionOpt = /* None */0;
               break;
           
         }
+        var stateWithCursor;
+        if (moveDirectionOpt) {
+          var match = moveDirectionOpt[0];
+          stateWithCursor = BoardState$Crosswords.moveCursor(match[0], match[1], board, s);
+        } else {
+          stateWithCursor = s;
+        }
         var newOrientation = key === /* SpaceBar */4 ? BoardState$Crosswords.flipOrientation(s[/* orientation */1]) : s[/* orientation */1];
         return /* record */[
-                /* cursor */newCursor,
+                /* cursor */stateWithCursor[/* cursor */0],
                 /* orientation */newOrientation
               ];
       }));

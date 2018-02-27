@@ -36,24 +36,6 @@ let board =
       )
   );
 
-/*let board =
-    Board.empty(10, 10, clues)
-    |> Board.setState(0, 0, Board.Blocked)
-    |> Board.setState(4, 0, Board.Blocked)
-    |> Board.setState(5, 0, Board.Blocked)
-    |> Board.setState(5, 5, Board.Blocked)
-    |> Board.setState(5, 6, Board.Blocked)
-    |> Board.setState(5, 7, Board.Blocked)
-    |> (
-      (b: Board.t) =>
-        List.fold_left(
-          (b: Board.t, (i, c): (int, char)) =>
-            Board.setState(1 + i, 2, Board.Full(c), b),
-          b,
-          List.mapi((i, c) => (i, c), Util.explodeString("hello"))
-        )
-    );
-  */
 Board.draw(board, context);
 
 module Observable = Bacon.Observable;
@@ -84,22 +66,25 @@ let stateObs =
     keyObs,
     BoardState.empty(board),
     (s, key) => {
-      let (oldX, oldY) = s.cursor;
-      let newCursor =
+      let moveDirectionOpt =
         switch key {
-        | Up => (oldX + 0, oldY - 1)
-        | Down => (oldX + 0, oldY + 1)
-        | Left => (oldX - 1, oldY + 0)
-        | Right => (oldX + 1, oldY + 0)
-        | _ => (oldX, oldY)
+        | Up => Some((0, -1))
+        | Down => Some((0, 1))
+        | Left => Some((-1, 0))
+        | Right => Some((1, 0))
+        | _ => None
         };
+      let stateWithCursor = switch moveDirectionOpt {
+      | Some((dirX, dirY)) => BoardState.moveCursor(dirX, dirY, board, s)
+      | None => s
+      };
       let newOrientation =
         if (key == SpaceBar) {
           BoardState.flipOrientation(s.orientation);
         } else {
           s.orientation;
         };
-      {cursor: newCursor, orientation: newOrientation};
+      {...stateWithCursor, orientation: newOrientation};
     }
   );
 

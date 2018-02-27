@@ -12,6 +12,12 @@ let flipOrientation: orientation => orientation =
     | Vertical => Horizontal
     };
 
+/* Precondition: only one of dirX or dirY is nonzero. */
+let moveCursor: (int, int, Board.t, t) => t =
+  (dirX, dirY, b, s) => {
+    s
+  };
+
 let empty: Board.t => t =
   b => {
     let firstFreeCell: (int, int) =

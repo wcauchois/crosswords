@@ -18,6 +18,10 @@ function flipOrientation(o) {
   }
 }
 
+function moveCursor(_, _$1, _$2, s) {
+  return s;
+}
+
 function empty(b) {
   var firstFreeCell = List.find((function (param) {
           var match = Board$Crosswords.getState(param[0], param[1], b);
@@ -140,6 +144,7 @@ function applyModifiers(b, s) {
 var PairsMap = 0;
 
 exports.flipOrientation = flipOrientation;
+exports.moveCursor = moveCursor;
 exports.empty = empty;
 exports.filledCoords = filledCoords;
 exports.PairsMap = PairsMap;
