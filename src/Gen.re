@@ -38,6 +38,25 @@ let map = (f: 'a => 'b, g: t('a)) : t('b) =>
     | None => None
     };
 
+let takeWhile = (f: 'a => bool, g: t('a)) : t('a) =>
+  () =>
+    switch (g()) {
+    | Some(x) when f(x) => Some(x)
+    | _ => None
+    };
+
+let last = (g: t('a)) : option('a) => {
+  let lastSeen: ref(option('a)) = ref(None);
+  let rec aux = () =>
+    switch (g()) {
+    | Some(x) =>
+      lastSeen := Some(x);
+      aux();
+    | None => lastSeen^
+    };
+  aux();
+};
+
 let rangeStep = (start: int, end_: int, step: int) : t(int) => {
   let i = ref(start);
   if (step == 0) {

@@ -96,6 +96,13 @@ let get = (x: int, y: int, b: t) : cell =>
   | Not_found => (EmptyCell, Unmodified)
   };
 
+let isBlocked = (x: int, y: int, b: t) => {
+  switch (get(x, y, b)) {
+  | (Blocked, _) => true
+  | _ => false
+  }
+};
+
 let getState = (x: int, y: int, b: t) : cellState => {
   let (state, _) = get(x, y, b);
   state;

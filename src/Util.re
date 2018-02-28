@@ -22,12 +22,21 @@ let unfold: ('b => option(('a, 'b)), 'b) => list('a) =
     unfoldRec(seed, []);
   };
 
-let flattenOption: option(option('a)) => option('a) = optOpt => {
-  switch optOpt {
-  | Some(Some(x)) => Some(x)
-  | _ => None
-  }
-};
+let flattenOption: option(option('a)) => option('a) =
+  optOpt =>
+    switch optOpt {
+    | Some(Some(x)) => Some(x)
+    | _ => None
+    };
+
+let getOrThrow = (exnFn: unit => exn, opt: option('a)) : 'a =>
+  switch opt {
+  | Some(x) => x
+  | None => raise(exnFn())
+  };
+
+let getOrThrowDefault = (opt: option('a)) : 'a =>
+  getOrThrow(() => Failure("Expected Some()"), opt);
 
 type orientation =
   | Horizontal

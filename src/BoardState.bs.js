@@ -6,6 +6,7 @@ var Curry = require("bs-platform/lib/js/curry.js");
 var Caml_obj = require("bs-platform/lib/js/caml_obj.js");
 var Js_option = require("bs-platform/lib/js/js_option.js");
 var Caml_int32 = require("bs-platform/lib/js/caml_int32.js");
+var Gen$Crosswords = require("./Gen.bs.js");
 var Util$Crosswords = require("./Util.bs.js");
 var Board$Crosswords = require("./Board.bs.js");
 var Caml_builtin_exceptions = require("bs-platform/lib/js/caml_builtin_exceptions.js");
@@ -18,8 +19,32 @@ function flipOrientation(o) {
   }
 }
 
-function moveCursor(_, _$1, _$2, s) {
-  return s;
+function moveCursor(dirX, dirY, b, s) {
+  var match = s[/* cursor */0];
+  var curX = [match[0]];
+  var curY = [match[1]];
+  var coordGen = function () {
+    if (Board$Crosswords.isValidCoord(curX[0], curY[0], b)) {
+      var ret = /* Some */[/* tuple */[
+          curX[0],
+          curY[0]
+        ]];
+      curX[0] = curX[0] + dirX | 0;
+      curY[0] = curY[0] + dirY | 0;
+      return ret;
+    } else {
+      return /* None */0;
+    }
+  };
+  var newCursor = Util$Crosswords.getOrThrowDefault(Gen$Crosswords.last((function (param) {
+              return Gen$Crosswords.takeWhile((function (param) {
+                            return 1 - Board$Crosswords.isBlocked(param[0], param[1], b);
+                          }), coordGen, param);
+            })));
+  return /* record */[
+          /* cursor */newCursor,
+          /* orientation */s[/* orientation */1]
+        ];
 }
 
 function empty(b) {

@@ -66,6 +66,36 @@ function map(f, g, _) {
   }
 }
 
+function takeWhile(f, g, _) {
+  var match = Curry._1(g, /* () */0);
+  if (match) {
+    var x = match[0];
+    if (Curry._1(f, x)) {
+      return /* Some */[x];
+    } else {
+      return /* None */0;
+    }
+  } else {
+    return /* None */0;
+  }
+}
+
+function last(g) {
+  var lastSeen = [/* None */0];
+  var _param = /* () */0;
+  while(true) {
+    var match = Curry._1(g, /* () */0);
+    if (match) {
+      lastSeen[0] = /* Some */[match[0]];
+      _param = /* () */0;
+      continue ;
+      
+    } else {
+      return lastSeen[0];
+    }
+  };
+}
+
 function rangeStep(start, end_, step) {
   var i = [start];
   if (!step) {
@@ -137,6 +167,8 @@ exports.ofList = ofList;
 exports.collect = collect;
 exports.find = find;
 exports.map = map;
+exports.takeWhile = takeWhile;
+exports.last = last;
 exports.rangeStep = rangeStep;
 exports.range = range;
 exports.cartesian = cartesian;

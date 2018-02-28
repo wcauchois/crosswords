@@ -112,6 +112,16 @@ function get(x, y, b) {
   }
 }
 
+function isBlocked(x, y, b) {
+  var match = get(x, y, b);
+  var match$1 = match[0];
+  if (typeof match$1 === "number" && match$1 !== 0) {
+    return /* true */1;
+  } else {
+    return /* false */0;
+  }
+}
+
 function getState(x, y, b) {
   return get(x, y, b)[0];
 }
@@ -248,6 +258,7 @@ exports.empty = empty;
 exports.isValidCoord = isValidCoord;
 exports.list_of_coords = list_of_coords;
 exports.get = get;
+exports.isBlocked = isBlocked;
 exports.getState = getState;
 exports.makeModFn = makeModFn;
 exports.setState = setState;

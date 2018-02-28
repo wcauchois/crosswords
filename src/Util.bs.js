@@ -4,6 +4,7 @@
 var List = require("bs-platform/lib/js/list.js");
 var Curry = require("bs-platform/lib/js/curry.js");
 var Caml_string = require("bs-platform/lib/js/caml_string.js");
+var Caml_builtin_exceptions = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 
 function explodeString(s) {
   var s$1 = s;
@@ -62,6 +63,23 @@ function flattenOption(optOpt) {
   }
 }
 
+function getOrThrow(exnFn, opt) {
+  if (opt) {
+    return opt[0];
+  } else {
+    throw Curry._1(exnFn, /* () */0);
+  }
+}
+
+function getOrThrowDefault(opt) {
+  return getOrThrow((function () {
+                return [
+                        Caml_builtin_exceptions.failure,
+                        "Expected Some()"
+                      ];
+              }), opt);
+}
+
 function direction_of_orientation(o) {
   if (o !== 0) {
     return /* tuple */[
@@ -79,5 +97,7 @@ function direction_of_orientation(o) {
 exports.explodeString = explodeString;
 exports.unfold = unfold;
 exports.flattenOption = flattenOption;
+exports.getOrThrow = getOrThrow;
+exports.getOrThrowDefault = getOrThrowDefault;
 exports.direction_of_orientation = direction_of_orientation;
 /* No side effect */
