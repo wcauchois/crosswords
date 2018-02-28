@@ -21,25 +21,55 @@ let collect = (g: t('a)) : list('a) => {
   List.rev(aux([]));
 };
 
-let range = (start: int, end_: int, ~step: option(int)=?) : t(int) => {
+let rangeStep = (start: int, end_: int, step: int) : t(int) => {
   let i = ref(start);
-  let stepOrDefault = switch (step) {
-  | Some(s) => s
-  | None => 1
+  if (step == 0) {
+    raise(Failure("Step must be nonzero"));
   };
-  if (stepOrDefault == 0) {
-    raise(Failure("Step must be nonzero"))
-  };
-  let cond: unit => bool = if (stepOrDefault > 0) {
-    () => i^ < end_;
-  } else {
-    () => i^ > end_;
-  };
-  () => {
-    if (cond()) {
-      Some(i^)
+  let cond: unit => bool =
+    if (step > 0) {
+      () => i^ < end_;
     } else {
-      None
-    }
-  }
+      () => i^ > end_;
+    };
+  () =>
+    if (cond()) {
+      let ret = Some(i^);
+      i := i^ + step;
+      ret;
+    } else {
+      None;
+    };
+};
+
+let range = (start: int, end_: int) => rangeStep(start, end_, 1);
+
+/*
+ ([0, 1], [2, 3]) => [(0, 2), (0, 3), (1, 2), (1, 3)]
+ */
+let cartesian = (g1: t('a), g2: t('b)) : t(('a, 'b)) => {
+  let g2List = collect(g2);
+  let g2CurrentList = ref(g2List);
+  let g1CurrentVal = ref(g1());
+  if (List.length(g2List) > 0) {
+    () =>
+      switch g1CurrentVal^ {
+      | Some(x) =>
+        switch g2CurrentList^ {
+        | [] => raise(Failure("Should never happen"))
+        | [head, ...tail] =>
+          let ret = Some((x, head));
+          if (List.length(tail) == 0) {
+            g2CurrentList := g2List;
+            g1CurrentVal := g1();
+          } else {
+            g2CurrentList := tail;
+          };
+          ret;
+        }
+      | None => None
+      };
+  } else {
+    () => None;
+  };
 };

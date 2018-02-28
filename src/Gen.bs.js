@@ -38,30 +38,76 @@ function collect(g) {
   return List.rev(aux(/* [] */0));
 }
 
-function range(start, end_, step) {
+function rangeStep(start, end_, step) {
   var i = [start];
-  var stepOrDefault = step ? step[0] : 1;
-  if (!stepOrDefault) {
+  if (!step) {
     throw [
           Caml_builtin_exceptions.failure,
           "Step must be nonzero"
         ];
   }
-  var cond = stepOrDefault > 0 ? (function () {
+  var cond = step > 0 ? (function () {
         return +(i[0] < end_);
       }) : (function () {
         return +(i[0] > end_);
       });
   return (function () {
       if (Curry._1(cond, /* () */0)) {
-        return /* Some */[i[0]];
+        var ret = /* Some */[i[0]];
+        i[0] = i[0] + step | 0;
+        return ret;
       } else {
         return /* None */0;
       }
     });
 }
 
+function range(start, end_) {
+  return rangeStep(start, end_, 1);
+}
+
+function cartesian(g1, g2) {
+  var g2List = collect(g2);
+  var g2CurrentList = [g2List];
+  var g1CurrentVal = [Curry._1(g1, /* () */0)];
+  if (List.length(g2List) > 0) {
+    return (function () {
+        var match = g1CurrentVal[0];
+        if (match) {
+          var match$1 = g2CurrentList[0];
+          if (match$1) {
+            var tail = match$1[1];
+            var ret = /* Some */[/* tuple */[
+                match[0],
+                match$1[0]
+              ]];
+            if (List.length(tail)) {
+              g2CurrentList[0] = tail;
+            } else {
+              g2CurrentList[0] = g2List;
+              g1CurrentVal[0] = Curry._1(g1, /* () */0);
+            }
+            return ret;
+          } else {
+            throw [
+                  Caml_builtin_exceptions.failure,
+                  "Should never happen"
+                ];
+          }
+        } else {
+          return /* None */0;
+        }
+      });
+  } else {
+    return (function () {
+        return /* None */0;
+      });
+  }
+}
+
 exports.ofList = ofList;
 exports.collect = collect;
+exports.rangeStep = rangeStep;
 exports.range = range;
+exports.cartesian = cartesian;
 /* No side effect */
