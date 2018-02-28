@@ -16,25 +16,13 @@ let flipOrientation: orientation => orientation =
 let moveCursor: (int, int, Board.t, t) => t =
   (dirX, dirY, b, s) => {
     let (cursorX, cursorY) = s.cursor;
-    let coordGen: Gen.t((int, int)) = {
-      let curX = ref(cursorX);
-      let curY = ref(cursorY);
-      () =>
-        if (Board.isValidCoord(curX^, curY^, b)) {
-          let ret = Some((curX^, curY^));
-          curX := curX^ + dirX;
-          curY := curY^ + dirY;
-          ret;
-        } else {
-          None;
-        };
+    let (newCursorX, newCursorY) = (cursorX + dirX, cursorY + dirY);
+    if (! Board.isValidCoord(newCursorX, newCursorY, b)
+        || Board.isBlocked(newCursorX, newCursorY, b)) {
+      s;
+    } else {
+      {...s, cursor: (newCursorX, newCursorY)};
     };
-    let newCursor: (int, int) =
-      coordGen
-      |> Gen.takeWhile(((x, y)) => ! Board.isBlocked(x, y, b))
-      |> Gen.last
-      |> Util.getOrThrowDefault;
-    {...s, cursor: newCursor};
   };
 
 let empty: Board.t => t =
