@@ -38,6 +38,34 @@ function collect(g) {
   return List.rev(aux(/* [] */0));
 }
 
+function find(p, g) {
+  var _param = /* () */0;
+  while(true) {
+    var match = Curry._1(g, /* () */0);
+    if (match) {
+      var x = match[0];
+      if (Curry._1(p, x)) {
+        return /* Some */[x];
+      } else {
+        _param = /* () */0;
+        continue ;
+        
+      }
+    } else {
+      return /* None */0;
+    }
+  };
+}
+
+function map(f, g, _) {
+  var match = Curry._1(g, /* () */0);
+  if (match) {
+    return /* Some */[Curry._1(f, match[0])];
+  } else {
+    return /* None */0;
+  }
+}
+
 function rangeStep(start, end_, step) {
   var i = [start];
   if (!step) {
@@ -107,6 +135,8 @@ function cartesian(g1, g2) {
 
 exports.ofList = ofList;
 exports.collect = collect;
+exports.find = find;
+exports.map = map;
 exports.rangeStep = rangeStep;
 exports.range = range;
 exports.cartesian = cartesian;

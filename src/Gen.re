@@ -21,6 +21,23 @@ let collect = (g: t('a)) : list('a) => {
   List.rev(aux([]));
 };
 
+let find = (p: 'a => bool, g: t('a)) : option('a) => {
+  let rec aux = () =>
+    switch (g()) {
+    | Some(x) when p(x) => Some(x)
+    | Some(_) => aux()
+    | None => None
+    };
+  aux();
+};
+
+let map = (f: 'a => 'b, g: t('a)) : t('b) =>
+  () =>
+    switch (g()) {
+    | Some(x) => Some(f(x))
+    | None => None
+    };
+
 let rangeStep = (start: int, end_: int, step: int) : t(int) => {
   let i = ref(start);
   if (step == 0) {

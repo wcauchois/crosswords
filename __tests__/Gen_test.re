@@ -45,3 +45,19 @@ describe("cartesian", () => {
     expect(collect(cartesian(() => None, ofList([1, 2])))) |> toEqual([])
   );
 });
+
+describe("find", () => {
+  test("withResult", () =>
+    expect(find(x => x == 2, ofList([1, 2, 3]))) |> toEqual(Some(2))
+  );
+  test("noResult", () =>
+    expect(find(x => x == 10, ofList([1, 2, 3]))) |> toEqual(None)
+  );
+});
+
+describe("map", () =>
+  test("simple", () =>
+    expect(ofList([1, 2, 3]) |> map(x => x * 2) |> collect)
+    |> toEqual([2, 4, 6])
+  )
+);

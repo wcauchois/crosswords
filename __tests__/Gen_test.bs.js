@@ -139,5 +139,65 @@ describe("cartesian", (function () {
                     }));
       }));
 
+describe("find", (function () {
+        Jest.test("withResult", (function () {
+                return Jest.Expect[/* toEqual */12](/* Some */[2], Jest.Expect[/* expect */0](Gen$Crosswords.find((function (x) {
+                                      return +(x === 2);
+                                    }), Gen$Crosswords.ofList(/* :: */[
+                                        1,
+                                        /* :: */[
+                                          2,
+                                          /* :: */[
+                                            3,
+                                            /* [] */0
+                                          ]
+                                        ]
+                                      ]))));
+              }));
+        return Jest.test("noResult", (function () {
+                      return Jest.Expect[/* toEqual */12](/* None */0, Jest.Expect[/* expect */0](Gen$Crosswords.find((function (x) {
+                                            return +(x === 10);
+                                          }), Gen$Crosswords.ofList(/* :: */[
+                                              1,
+                                              /* :: */[
+                                                2,
+                                                /* :: */[
+                                                  3,
+                                                  /* [] */0
+                                                ]
+                                              ]
+                                            ]))));
+                    }));
+      }));
+
+describe("map", (function () {
+        return Jest.test("simple", (function () {
+                      var partial_arg = Gen$Crosswords.ofList(/* :: */[
+                            1,
+                            /* :: */[
+                              2,
+                              /* :: */[
+                                3,
+                                /* [] */0
+                              ]
+                            ]
+                          ]);
+                      return Jest.Expect[/* toEqual */12](/* :: */[
+                                  2,
+                                  /* :: */[
+                                    4,
+                                    /* :: */[
+                                      6,
+                                      /* [] */0
+                                    ]
+                                  ]
+                                ], Jest.Expect[/* expect */0](Gen$Crosswords.collect((function (param) {
+                                            return Gen$Crosswords.map((function (x) {
+                                                          return (x << 1);
+                                                        }), partial_arg, param);
+                                          }))));
+                    }));
+      }));
+
 exports.exampleList = exampleList;
 /*  Not a pure module */
