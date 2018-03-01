@@ -37,7 +37,7 @@ let clues: list(Board.clue) = [
 
 let blocks = [(0, 0), (0, 1), (4, 3), (4, 4)];
 
-let board =
+let initBoard =
   Board.empty(5, 5, clues)
   |> (
     (b: Board.t) =>
@@ -48,7 +48,7 @@ let board =
       )
   );
 
-Board.draw(board, context);
+Board.draw(initBoard, context);
 
 module Observable = Bacon.Observable;
 
@@ -59,7 +59,8 @@ type keyboardInput =
   | Right
   | Up
   | Down
-  | SpaceBar;
+  | SpaceBar
+  | Alpha(string);
 
 let keyObs: Bacon.observable(keyboardInput) =
   Bacon.capturingKeyboardObservable(event =>
@@ -69,6 +70,8 @@ let keyObs: Bacon.observable(keyboardInput) =
     | "ArrowLeft" => Some(Left)
     | "ArrowRight" => Some(Right)
     | " " => Some(SpaceBar)
+    | s when String.length(s) == 1 && Util.isAlpha(s) =>
+      Some(Alpha(String.uppercase(s)))
     | _ => None
     }
   );
@@ -76,7 +79,7 @@ let keyObs: Bacon.observable(keyboardInput) =
 let stateObs =
   Observable.scan(
     keyObs,
-    BoardState.empty(board),
+    BoardState.empty(initBoard),
     (s, key) => {
       let moveDirectionOpt =
         switch key {
@@ -88,7 +91,7 @@ let stateObs =
         };
       let stateWithCursor =
         switch moveDirectionOpt {
-        | Some((dirX, dirY)) => BoardState.moveCursor(dirX, dirY, board, s)
+        | Some((dirX, dirY)) => BoardState.moveCursor(dirX, dirY, initBoard, s)
         | None => s
         };
       let newOrientation =
@@ -101,11 +104,23 @@ let stateObs =
     }
   );
 
-let initBoardState = BoardState.empty(board);
+let boardObs =
+  Observable.scan(
+    Observable.combine(keyObs, stateObs, (key, state) => (key, state)),
+    initBoard,
+    (b, (key, state)) => {
+      let (cursorX, cursorY) = state.cursor;
+      switch key {
+      | Alpha(s) => Board.setState(cursorX, cursorY, Full(s.[0]), b)
+      | _ => b
+      };
+    }
+  );
 
 let boardAndStateObs =
-  Observable.map(stateObs, state =>
-    (BoardState.applyModifiers(board, state), state)
+  Observable.map(
+    Observable.combine(boardObs, stateObs, (b, s) => (b, s)), ((b, s)) =>
+    (BoardState.applyModifiers(b, s), s)
   );
 
 Observable.onValue(

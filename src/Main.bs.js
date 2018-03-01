@@ -3,6 +3,8 @@
 
 var List = require("bs-platform/lib/js/list.js");
 var Curry = require("bs-platform/lib/js/curry.js");
+var $$String = require("bs-platform/lib/js/string.js");
+var Caml_string = require("bs-platform/lib/js/caml_string.js");
 var Dom$Crosswords = require("./FFI/Dom.bs.js");
 var Util$Crosswords = require("./Util.bs.js");
 var Bacon$Crosswords = require("./FFI/Bacon.bs.js");
@@ -137,15 +139,15 @@ var blocks = /* :: */[
 
 var b = Board$Crosswords.empty(5, 5, clues);
 
-var board = List.fold_left((function (b, param) {
+var initBoard = List.fold_left((function (b, param) {
         return Board$Crosswords.setState(param[0], param[1], /* Blocked */1, b);
       }), b, blocks);
 
-Board$Crosswords.draw(board, context);
+Board$Crosswords.draw(initBoard, context);
 
 var keyObs = Bacon$Crosswords.capturingKeyboardObservable((function ($$event) {
-        var match = $$event.key;
-        switch (match) {
+        var s = $$event.key;
+        switch (s) {
           case " " : 
               return /* Some */[/* SpaceBar */4];
           case "ArrowDown" : 
@@ -157,46 +159,54 @@ var keyObs = Bacon$Crosswords.capturingKeyboardObservable((function ($$event) {
           case "ArrowUp" : 
               return /* Some */[/* Up */2];
           default:
-            return /* None */0;
+            if (s.length === 1 && Util$Crosswords.isAlpha(s)) {
+              return /* Some */[/* Alpha */[$$String.uppercase(s)]];
+            } else {
+              return /* None */0;
+            }
         }
       }));
 
-var stateObs = keyObs.scan(BoardState$Crosswords.empty(board), (function (s, key) {
+var stateObs = keyObs.scan(BoardState$Crosswords.empty(initBoard), (function (s, key) {
         var moveDirectionOpt;
-        switch (key) {
-          case 0 : 
-              moveDirectionOpt = /* Some */[/* tuple */[
-                  -1,
-                  0
-                ]];
-              break;
-          case 1 : 
-              moveDirectionOpt = /* Some */[/* tuple */[
-                  1,
-                  0
-                ]];
-              break;
-          case 2 : 
-              moveDirectionOpt = /* Some */[/* tuple */[
-                  0,
-                  -1
-                ]];
-              break;
-          case 3 : 
-              moveDirectionOpt = /* Some */[/* tuple */[
-                  0,
-                  1
-                ]];
-              break;
-          case 4 : 
-              moveDirectionOpt = /* None */0;
-              break;
-          
+        if (typeof key === "number") {
+          switch (key) {
+            case 0 : 
+                moveDirectionOpt = /* Some */[/* tuple */[
+                    -1,
+                    0
+                  ]];
+                break;
+            case 1 : 
+                moveDirectionOpt = /* Some */[/* tuple */[
+                    1,
+                    0
+                  ]];
+                break;
+            case 2 : 
+                moveDirectionOpt = /* Some */[/* tuple */[
+                    0,
+                    -1
+                  ]];
+                break;
+            case 3 : 
+                moveDirectionOpt = /* Some */[/* tuple */[
+                    0,
+                    1
+                  ]];
+                break;
+            case 4 : 
+                moveDirectionOpt = /* None */0;
+                break;
+            
+          }
+        } else {
+          moveDirectionOpt = /* None */0;
         }
         var stateWithCursor;
         if (moveDirectionOpt) {
           var match = moveDirectionOpt[0];
-          stateWithCursor = BoardState$Crosswords.moveCursor(match[0], match[1], board, s);
+          stateWithCursor = BoardState$Crosswords.moveCursor(match[0], match[1], initBoard, s);
         } else {
           stateWithCursor = s;
         }
@@ -207,12 +217,31 @@ var stateObs = keyObs.scan(BoardState$Crosswords.empty(board), (function (s, key
               ];
       }));
 
-var initBoardState = BoardState$Crosswords.empty(board);
+var boardObs = keyObs.combine(stateObs, (function (key, state) {
+          return /* tuple */[
+                  key,
+                  state
+                ];
+        })).scan(initBoard, (function (b, param) {
+        var key = param[0];
+        var match = param[1][/* cursor */0];
+        if (typeof key === "number") {
+          return b;
+        } else {
+          return Board$Crosswords.setState(match[0], match[1], /* Full */[Caml_string.get(key[0], 0)], b);
+        }
+      }));
 
-var boardAndStateObs = stateObs.map((function (state) {
+var boardAndStateObs = boardObs.combine(stateObs, (function (b, s) {
+          return /* tuple */[
+                  b,
+                  s
+                ];
+        })).map((function (param) {
+        var s = param[1];
         return /* tuple */[
-                BoardState$Crosswords.applyModifiers(board, state),
-                state
+                BoardState$Crosswords.applyModifiers(param[0], s),
+                s
               ];
       }));
 
@@ -245,11 +274,11 @@ exports.across = across;
 exports.down = down;
 exports.clues = clues;
 exports.blocks = blocks;
-exports.board = board;
+exports.initBoard = initBoard;
 exports.Observable = Observable;
 exports.KeyboardEvent = KeyboardEvent;
 exports.keyObs = keyObs;
 exports.stateObs = stateObs;
-exports.initBoardState = initBoardState;
+exports.boardObs = boardObs;
 exports.boardAndStateObs = boardAndStateObs;
 /* canvas Not a pure module */

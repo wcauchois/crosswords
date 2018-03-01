@@ -29,6 +29,11 @@ let repeat: (int => option(observable('a))) => observable('a) =
 module Observable = {
   [@bs.send] external onValue : (observable('a), 'a => unit) => unit = "";
   [@bs.send] external map : (observable('a), 'a => 'b) => observable('b) = "";
+  [@bs.send] external doLog : observable('a) => unit = "";
+  [@bs.send]
+  external combine :
+    (observable('a), observable('b), ('a, 'b) => 'c) => observable('c) =
+    "";
   [@bs.send]
   external flatMap : (observable('a), 'a => observable('b)) => observable('b) =
     "";
