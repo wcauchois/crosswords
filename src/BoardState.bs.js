@@ -164,4 +164,4 @@ exports.PairsMap = PairsMap;
 exports.clueForOrientation = clueForOrientation;
 exports.currentClue = currentClue;
 exports.applyModifiers = applyModifiers;
-/* Board-Crosswords Not a pure module */
+/* Util-Crosswords Not a pure module */

@@ -38,6 +38,11 @@ let getOrThrow = (exnFn: unit => exn, opt: option('a)) : 'a =>
 let getOrThrowDefault = (opt: option('a)) : 'a =>
   getOrThrow(() => Failure("Expected Some()"), opt);
 
+let isAlpha: string => bool = {
+  let alphaRegex = [%bs.re "/[a-zA-Z]+/"];
+  s => Js.Re.test(s, alphaRegex)
+};
+
 type orientation =
   | Horizontal
   | Vertical;

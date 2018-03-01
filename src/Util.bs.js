@@ -80,6 +80,12 @@ function getOrThrowDefault(opt) {
               }), opt);
 }
 
+var alphaRegex = (/[a-zA-Z]+/);
+
+function isAlpha(s) {
+  return +alphaRegex.test(s);
+}
+
 function direction_of_orientation(o) {
   if (o !== 0) {
     return /* tuple */[
@@ -99,5 +105,6 @@ exports.unfold = unfold;
 exports.flattenOption = flattenOption;
 exports.getOrThrow = getOrThrow;
 exports.getOrThrowDefault = getOrThrowDefault;
+exports.isAlpha = isAlpha;
 exports.direction_of_orientation = direction_of_orientation;
-/* No side effect */
+/* alphaRegex Not a pure module */

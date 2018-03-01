@@ -4,6 +4,7 @@
 var List = require("bs-platform/lib/js/list.js");
 var Curry = require("bs-platform/lib/js/curry.js");
 var Dom$Crosswords = require("./FFI/Dom.bs.js");
+var Util$Crosswords = require("./Util.bs.js");
 var Bacon$Crosswords = require("./FFI/Bacon.bs.js");
 var Board$Crosswords = require("./Board.bs.js");
 var BoardState$Crosswords = require("./BoardState.bs.js");
@@ -208,13 +209,23 @@ var stateObs = keyObs.scan(BoardState$Crosswords.empty(board), (function (s, key
 
 var initBoardState = BoardState$Crosswords.empty(board);
 
-var boardObs = stateObs.map((function (state) {
-        return BoardState$Crosswords.applyModifiers(board, state);
+var boardAndStateObs = stateObs.map((function (state) {
+        return /* tuple */[
+                BoardState$Crosswords.applyModifiers(board, state),
+                state
+              ];
       }));
 
-boardObs.onValue((function (b) {
+boardAndStateObs.onValue((function (param) {
+        var clue = Util$Crosswords.getOrThrowDefault(BoardState$Crosswords.currentClue(param[0], param[1]));
+        var clueElem = Curry._1(Dom$Crosswords.getById, "clue");
+        clueElem.textContent = clue[/* t */2];
+        return /* () */0;
+      }));
+
+boardAndStateObs.onValue((function (param) {
         context.clearRect(0.0, 0.0, 480.0, 480.0);
-        return Board$Crosswords.draw(b, context);
+        return Board$Crosswords.draw(param[0], context);
       }));
 
 var Ctx = 0;
@@ -240,5 +251,5 @@ exports.KeyboardEvent = KeyboardEvent;
 exports.keyObs = keyObs;
 exports.stateObs = stateObs;
 exports.initBoardState = initBoardState;
-exports.boardObs = boardObs;
+exports.boardAndStateObs = boardAndStateObs;
 /* canvas Not a pure module */

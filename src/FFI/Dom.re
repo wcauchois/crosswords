@@ -31,7 +31,7 @@ module Window = {
 };
 
 module Element {
-  [@bs.set] external setText : (domElement, string) => unit = "text";
+  [@bs.set] external setTextContent : (domElement, string) => unit = "textContent";
 };
 
 module KeyboardEvent = {

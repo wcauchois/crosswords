@@ -103,12 +103,23 @@ let stateObs =
 
 let initBoardState = BoardState.empty(board);
 
-let boardObs =
-  Observable.map(stateObs, state => BoardState.applyModifiers(board, state));
+let boardAndStateObs =
+  Observable.map(stateObs, state =>
+    (BoardState.applyModifiers(board, state), state)
+  );
 
 Observable.onValue(
-  boardObs,
-  b => {
+  boardAndStateObs,
+  ((b, s)) => {
+    let clue = BoardState.currentClue(b, s) |> Util.getOrThrowDefault;
+    let clueElem = Dom.getById("clue");
+    Dom.Element.setTextContent(clueElem, clue.t);
+  }
+);
+
+Observable.onValue(
+  boardAndStateObs,
+  ((b, _)) => {
     Canvas.Ctx.clearRect(context, 0.0, 0.0, 480.0, 480.0);
     Board.draw(b, context);
   }
